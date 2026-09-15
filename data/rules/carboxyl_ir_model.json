@@ -1,0 +1,16 @@
+{
+  "schema": "carboxyl.ir.canonical.v1",
+  "source": "SDBS propionic-acid peak table (1716 cm-1 / 4 %T C=O; 1240 / 12 %T C-O; 2986-2656 O-H/C-H canyon; 933 dimer oop) + IRSP shapes C/E/B + 9701 exam acid drawings (broad 3500-2500, sharp ~1700, recovered ~2200, fingerprint).",
+  "main_peaks": {
+    "OH_dimer_canyon": "two-component: super-Gaussian ~3040 (σ~230) + Gaussian wing ~2660 — NOT a single blob at 2935",
+    "CH_on_canyon": "Lorentzian spikes 2960/2935/2878 (Shape E cup-and-handle)",
+    "C=O": "Lorentzian γ~10; aliphatic dimer 1714-1716; acetic 1716; aryl conjugated 1688",
+    "C-O": "acetic ~1290; CH2-COOH ~1240; 1415 COH bend",
+    "dimer_oop": "~933 cm-1"
+  },
+  "environment": {
+    "acetic": "CH3-COOH: stronger 2960/2878, C-O 1290, weaker CH2",
+    "alkanoic_CH2": "RCH2COOH: stronger 2935 CH2, C-O 1240",
+    "aryl": "ArCOOH: C=O 1688, aromatic C-H 3030, no aliphatic CH2/CH3 on carboxyl"
+  }
+}

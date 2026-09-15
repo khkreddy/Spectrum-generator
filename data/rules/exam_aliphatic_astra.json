@@ -1,0 +1,827 @@
+{
+  "families": {
+    "ketone": {
+      "smarts_note": "An acyclic ketone has a C(=O) carbon bonded to two carbon atoms. Do not classify ester or carboxylic-acid carbonyls as ketones. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "CH-envelope",
+          "nu0": 2975,
+          "Tmin": 65.2,
+          "shape": "rounded",
+          "fwhm": 102,
+          "role": "Inherited alkyl CH envelope; retain the measured rounded outline."
+        },
+        {
+          "id": "C=O",
+          "nu0": 1744,
+          "Tmin": 5.7,
+          "shape": "sharp",
+          "fwhm": 55,
+          "role": "Dominant, deep, compact ketone carbonyl absorption."
+        },
+        {
+          "id": "fingerprint-1466",
+          "nu0": 1466,
+          "Tmin": 51.7,
+          "shape": "rounded",
+          "fwhm": 121,
+          "role": "Inherited deformation-region envelope."
+        },
+        {
+          "id": "fingerprint-1404",
+          "nu0": 1404,
+          "Tmin": 15.4,
+          "shape": "sharp",
+          "fwhm": 44,
+          "role": "Strong inherited fingerprint trough."
+        },
+        {
+          "id": "fingerprint-1272",
+          "nu0": 1272,
+          "Tmin": 22.5,
+          "shape": "sharp",
+          "fwhm": 44,
+          "role": "Strong inherited fingerprint trough; not evidence of an alcohol or ester C-O group."
+        },
+        {
+          "id": "fingerprint-614",
+          "nu0": 614,
+          "Tmin": 48.2,
+          "shape": "sharp",
+          "fwhm": 33,
+          "role": "Inherited low-wavenumber fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CC(=O)C; propanone; 9701_m23_qp_12:q38",
+      "tweaks": [
+        {
+          "when": "A supported acyclic ketone has additional CH2 groups relative to propanone.",
+          "do": "Make the CH envelope only slightly deeper by lowering its Tmin a few percentage points at most. Retain the carbonyl anchor and the family fingerprint."
+        },
+        {
+          "when": "Only alkyl-chain length or branching changes.",
+          "do": "Keep the exam envelope recognizable. Do not invent additional strong bands or apply a wholesale frequency shift."
+        }
+      ]
+    },
+    "ester": {
+      "smarts_note": "Identify C(=O)-O-C, with the single-bonded oxygen attached to carbon rather than hydrogen. The ester carbonyl and ester C-O belong to one family, not separate ketone and alcohol families. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "CH-envelope-1",
+          "nu0": 3009,
+          "Tmin": 14.8,
+          "shape": "rounded",
+          "fwhm": 118,
+          "role": "Deep inherited high-wavenumber CH-region envelope."
+        },
+        {
+          "id": "CH-envelope-2",
+          "nu0": 2950,
+          "Tmin": 41.6,
+          "shape": "rounded",
+          "fwhm": 154,
+          "role": "Overlapping inherited CH-region envelope."
+        },
+        {
+          "id": "C=O",
+          "nu0": 1741,
+          "Tmin": 1.4,
+          "shape": "sharp",
+          "fwhm": 44,
+          "role": "Very strong, compact ester carbonyl absorption."
+        },
+        {
+          "id": "fingerprint-1495",
+          "nu0": 1495,
+          "Tmin": 56.5,
+          "shape": "rounded",
+          "fwhm": 143,
+          "role": "Inherited deformation-region envelope."
+        },
+        {
+          "id": "C-O",
+          "nu0": 1274,
+          "Tmin": 1.6,
+          "shape": "sharp",
+          "fwhm": 59,
+          "role": "Very strong ester C-O-region anchor accompanying C=O."
+        },
+        {
+          "id": "C-O-region-1128",
+          "nu0": 1128,
+          "Tmin": 64.9,
+          "shape": "sharp",
+          "fwhm": 55,
+          "role": "Weaker inherited C-O-region fingerprint detail."
+        },
+        {
+          "id": "fingerprint-691",
+          "nu0": 691,
+          "Tmin": 67.8,
+          "shape": "sharp",
+          "fwhm": 55,
+          "role": "Inherited low-wavenumber fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CCOC(=O)C; ethyl ethanoate; 9701_m24_qp_12:q40",
+      "tweaks": [
+        {
+          "when": "Additional CH2 groups occur on either alkyl side of a supported ester.",
+          "do": "Slightly deepen the CH envelope without substantially moving or broadening the C=O and C-O anchors."
+        },
+        {
+          "when": "The ester alkyl environment changes modestly.",
+          "do": "Inherit the paired deep C=O and C-O absorptions. Do not add an OH basin merely because the molecule contains oxygen."
+        }
+      ]
+    },
+    "primary_alcohol": {
+      "smarts_note": "Identify one non-acid OH attached to a saturated carbon having one carbon neighbour. Route ethanol to the explicit ethanol alias and molecules with two or more alcohol OH groups to polyol. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-envelope-background",
+          "nu0": 3570,
+          "Tmin": 55.7,
+          "shape": "broad",
+          "fwhm": 1352,
+          "role": "Broad background descriptor in the supplied alcohol encoding; not an acid-family assignment."
+        },
+        {
+          "id": "OH-basin",
+          "nu0": 3160,
+          "Tmin": 2.7,
+          "shape": "rounded",
+          "fwhm": 144,
+          "role": "Deep rounded trough within the inherited alcohol OH envelope."
+        },
+        {
+          "id": "high-frequency-envelope-2780",
+          "nu0": 2780,
+          "Tmin": 1.8,
+          "shape": "rounded",
+          "fwhm": 154,
+          "role": "Inherited high-wavenumber envelope detail; do not reinterpret as a new functional group."
+        },
+        {
+          "id": "high-frequency-envelope-2709",
+          "nu0": 2709,
+          "Tmin": 4.7,
+          "shape": "rounded",
+          "fwhm": 123,
+          "role": "Inherited high-wavenumber envelope detail overlapping the OH/CH region."
+        },
+        {
+          "id": "C-O-region",
+          "nu0": 1140,
+          "Tmin": 3.7,
+          "shape": "rounded",
+          "fwhm": 71,
+          "role": "Deep alcohol C-O-region anchor; retain its measured rounded shape."
+        },
+        {
+          "id": "fingerprint-858",
+          "nu0": 858,
+          "Tmin": 58.4,
+          "shape": "sharp",
+          "fwhm": 51,
+          "role": "Inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-767",
+          "nu0": 767,
+          "Tmin": 65.6,
+          "shape": "rounded",
+          "fwhm": 256,
+          "role": "Inherited low-wavenumber envelope."
+        },
+        {
+          "id": "fingerprint-695",
+          "nu0": 695,
+          "Tmin": 53.5,
+          "shape": "sharp",
+          "fwhm": 56,
+          "role": "Inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-562",
+          "nu0": 562,
+          "Tmin": 63.5,
+          "shape": "sharp",
+          "fwhm": 56,
+          "role": "Inherited fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CCCO; propan-1-ol; 9701_s18_qp_11:q30",
+      "tweaks": [
+        {
+          "when": "A supported primary monool has additional CH2 groups relative to propan-1-ol.",
+          "do": "Slightly deepen the CH contribution to the inherited high-wavenumber envelope. Do not move unusual gold troughs to textbook CH positions or deepen the entire OH background."
+        },
+        {
+          "when": "A second alcohol OH is introduced.",
+          "do": "Select polyol rather than stacking two primary-alcohol spectra. Allow a modestly wider/deeper composite OH basin than in the corresponding monool; do not create an acid OH canyon."
+        },
+        {
+          "when": "The input is ethanol.",
+          "do": "Use the ethanol alias, which explicitly shares this prior."
+        }
+      ]
+    },
+    "secondary_alcohol": {
+      "smarts_note": "Identify one non-acid OH attached to a saturated carbon having two carbon neighbours and one hydrogen. Molecules with two or more alcohol OH groups select polyol instead. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-basin",
+          "nu0": 3350,
+          "Tmin": 8.1,
+          "shape": "rounded",
+          "fwhm": 184,
+          "role": "Strong rounded alcohol OH basin."
+        },
+        {
+          "id": "CH-envelope-1",
+          "nu0": 2931,
+          "Tmin": 6.7,
+          "shape": "rounded",
+          "fwhm": 133,
+          "role": "Deep inherited alkyl CH envelope."
+        },
+        {
+          "id": "CH-envelope-2",
+          "nu0": 2865,
+          "Tmin": 20.5,
+          "shape": "rounded",
+          "fwhm": 141,
+          "role": "Overlapping inherited CH envelope."
+        },
+        {
+          "id": "fingerprint-1493",
+          "nu0": 1493,
+          "Tmin": 25.6,
+          "shape": "rounded",
+          "fwhm": 185,
+          "role": "Inherited deformation-region envelope."
+        },
+        {
+          "id": "fingerprint-1420",
+          "nu0": 1420,
+          "Tmin": 15.2,
+          "shape": "sharp",
+          "fwhm": 27,
+          "role": "Compact inherited fingerprint trough."
+        },
+        {
+          "id": "fingerprint-1366",
+          "nu0": 1366,
+          "Tmin": 22.8,
+          "shape": "sharp",
+          "fwhm": 68,
+          "role": "Inherited fingerprint trough."
+        },
+        {
+          "id": "fingerprint-1215",
+          "nu0": 1215,
+          "Tmin": 9.3,
+          "shape": "rounded",
+          "fwhm": 73,
+          "role": "Strong inherited fingerprint envelope."
+        },
+        {
+          "id": "C-O-region",
+          "nu0": 1069,
+          "Tmin": 6.1,
+          "shape": "sharp",
+          "fwhm": 37,
+          "role": "Deep compact alcohol C-O-region anchor."
+        },
+        {
+          "id": "fingerprint-941",
+          "nu0": 941,
+          "Tmin": 20.1,
+          "shape": "sharp",
+          "fwhm": 24,
+          "role": "Compact inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-777",
+          "nu0": 777,
+          "Tmin": 37,
+          "shape": "rounded",
+          "fwhm": 77,
+          "role": "Inherited low-wavenumber envelope."
+        },
+        {
+          "id": "fingerprint-594",
+          "nu0": 594,
+          "Tmin": 56.5,
+          "shape": "sharp",
+          "fwhm": 41,
+          "role": "Inherited fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CC(C)O; propan-2-ol; 9701_w19_qp_11:q30",
+      "tweaks": [
+        {
+          "when": "A supported secondary monool has additional CH2 groups relative to propan-2-ol.",
+          "do": "Slightly lower CH-envelope Tmin while retaining the rounded OH basin and the C-O-region anchor."
+        },
+        {
+          "when": "A second alcohol OH is introduced.",
+          "do": "Select polyol and make only a modest OH-multiplicity adjustment to the composite basin. Do not duplicate the entire secondary-alcohol fingerprint."
+        },
+        {
+          "when": "Branching changes without changing alcohol degree.",
+          "do": "Keep the secondary-alcohol exam envelope; permit only small local adjustments."
+        }
+      ]
+    },
+    "acetic": {
+      "smarts_note": "Recognize the molecular graph CH3-C(=O)-OH as the ethanoic-acid special case, independent of SMILES spelling. The acidic OH does not count as an alcohol OH. Longer saturated monocarboxylic-acid homologues select acid. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-CH-envelope-2844",
+          "nu0": 2844,
+          "Tmin": 23.5,
+          "shape": "rounded",
+          "fwhm": 116,
+          "role": "Rounded structure within the overlapping acid OH/CH envelope."
+        },
+        {
+          "id": "OH-CH-envelope-2801",
+          "nu0": 2801,
+          "Tmin": 23.5,
+          "shape": "rounded",
+          "fwhm": 146,
+          "role": "Additional inherited structure within the acid OH/CH envelope."
+        },
+        {
+          "id": "acid-OH-canyon-2612",
+          "nu0": 2612,
+          "Tmin": 29.5,
+          "shape": "broad",
+          "fwhm": 422,
+          "role": "Broad hydrogen-bonded acid OH canyon descriptor."
+        },
+        {
+          "id": "acid-OH-detail-2423",
+          "nu0": 2423,
+          "Tmin": 42.3,
+          "shape": "rounded",
+          "fwhm": 124,
+          "role": "Rounded detail within the acid OH canyon."
+        },
+        {
+          "id": "acid-OH-canyon-2350",
+          "nu0": 2350,
+          "Tmin": 38.3,
+          "shape": "broad",
+          "fwhm": 806,
+          "role": "Wide inherited acid OH canyon descriptor."
+        },
+        {
+          "id": "carbonyl-envelope-1772",
+          "nu0": 1772,
+          "Tmin": 20.2,
+          "shape": "rounded",
+          "fwhm": 94,
+          "role": "Inherited carbonyl-region envelope detail; not a second carbonyl group."
+        },
+        {
+          "id": "C=O",
+          "nu0": 1732,
+          "Tmin": 4.8,
+          "shape": "sharp",
+          "fwhm": 51,
+          "role": "Deep compact carboxylic-acid carbonyl absorption."
+        },
+        {
+          "id": "fingerprint-background-1546",
+          "nu0": 1546,
+          "Tmin": 69.7,
+          "shape": "broad",
+          "fwhm": 349,
+          "role": "Broad inherited fingerprint background, not an additional OH assignment."
+        },
+        {
+          "id": "fingerprint-1452",
+          "nu0": 1452,
+          "Tmin": 21.9,
+          "shape": "sharp",
+          "fwhm": 47,
+          "role": "Strong inherited fingerprint trough."
+        },
+        {
+          "id": "fingerprint-1401",
+          "nu0": 1401,
+          "Tmin": 42.6,
+          "shape": "rounded",
+          "fwhm": 109,
+          "role": "Inherited fingerprint envelope."
+        },
+        {
+          "id": "acid-C-O-region",
+          "nu0": 1343,
+          "Tmin": 13,
+          "shape": "rounded",
+          "fwhm": 94,
+          "role": "Strong gold fingerprint anchor in the acid C-O region; preserve its encoded position."
+        },
+        {
+          "id": "fingerprint-background-1114",
+          "nu0": 1114,
+          "Tmin": 60,
+          "shape": "broad",
+          "fwhm": 305,
+          "role": "Broad inherited fingerprint envelope."
+        }
+      ],
+      "inherit": "exam TikZ of CC(=O)O; ethanoic acid; 9701_s20_qp_11:q29",
+      "tweaks": [
+        {
+          "when": "The input is ethanoic acid, including an equivalent SMILES spelling.",
+          "do": "Replay this special-case envelope unchanged; do not replace it with the propanoic-acid envelope."
+        },
+        {
+          "when": "The acid chain is extended beyond ethanoic acid.",
+          "do": "Switch to the acid family first, then apply only small CH-environment changes."
+        },
+        {
+          "when": "Using the nominal acid C-O teaching rule rather than exact gold replay.",
+          "do": "Use approximately 1290 cm^-1 for the acetic environment versus approximately 1240 cm^-1 for longer acids. These are nominal environment guides, not the measured 1343 cm^-1 gold trough; do not silently overwrite gold or add a duplicate C-O band."
+        }
+      ]
+    },
+    "acid": {
+      "smarts_note": "Identify a neutral C(=O)-OH group in an open-chain saturated monocarboxylic acid. Use acetic for ethanoic acid and this propanoic-acid prior for supported longer homologues. Do not count the acidic OH as an alcohol or the acid carbonyl as a ketone. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-CH-envelope-2983",
+          "nu0": 2983,
+          "Tmin": 15.8,
+          "shape": "rounded",
+          "fwhm": 190,
+          "role": "Inherited overlapping alkyl CH and acid OH envelope."
+        },
+        {
+          "id": "CH-detail-2922",
+          "nu0": 2922,
+          "Tmin": 11.2,
+          "shape": "sharp",
+          "fwhm": 43,
+          "role": "Compact CH-region detail within the wider acid envelope."
+        },
+        {
+          "id": "OH-CH-envelope-2880",
+          "nu0": 2880,
+          "Tmin": 13.2,
+          "shape": "rounded",
+          "fwhm": 250,
+          "role": "Rounded structure within the overlapping CH/OH envelope."
+        },
+        {
+          "id": "acid-OH-canyon-2690",
+          "nu0": 2690,
+          "Tmin": 33.4,
+          "shape": "broad",
+          "fwhm": 560,
+          "role": "Broad hydrogen-bonded acid OH canyon descriptor."
+        },
+        {
+          "id": "acid-OH-canyon-2612",
+          "nu0": 2612,
+          "Tmin": 33.4,
+          "shape": "broad",
+          "fwhm": 672,
+          "role": "Overlapping broad descriptor of the same acid OH canyon."
+        },
+        {
+          "id": "acid-OH-canyon-2517",
+          "nu0": 2517,
+          "Tmin": 39.8,
+          "shape": "broad",
+          "fwhm": 957,
+          "role": "Wide low-wavenumber extent of the acid OH canyon."
+        },
+        {
+          "id": "C=O",
+          "nu0": 1728,
+          "Tmin": 4.2,
+          "shape": "sharp",
+          "fwhm": 52,
+          "role": "Deep compact carboxylic-acid carbonyl absorption."
+        },
+        {
+          "id": "fingerprint-background-1492",
+          "nu0": 1492,
+          "Tmin": 24.2,
+          "shape": "broad",
+          "fwhm": 310,
+          "role": "Broad inherited fingerprint envelope, not another acid OH band."
+        },
+        {
+          "id": "fingerprint-1448",
+          "nu0": 1448,
+          "Tmin": 20.5,
+          "shape": "sharp",
+          "fwhm": 21,
+          "role": "Compact inherited fingerprint trough."
+        },
+        {
+          "id": "fingerprint-1328",
+          "nu0": 1328,
+          "Tmin": 26.6,
+          "shape": "rounded",
+          "fwhm": 116,
+          "role": "Inherited fingerprint envelope beside the C-O-region anchor."
+        },
+        {
+          "id": "acid-C-O-region",
+          "nu0": 1280,
+          "Tmin": 12.4,
+          "shape": "sharp",
+          "fwhm": 48,
+          "role": "Strong compact acid C-O-region gold anchor."
+        },
+        {
+          "id": "fingerprint-1134",
+          "nu0": 1134,
+          "Tmin": 33.4,
+          "shape": "sharp",
+          "fwhm": 52,
+          "role": "Inherited fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CCC(=O)O; propanoic acid; 9701_s20_qp_13:q25",
+      "tweaks": [
+        {
+          "when": "Additional CH2 groups occur relative to propanoic acid.",
+          "do": "Slightly deepen the CH contribution while retaining the broad acid OH canyon and deep sharp C=O. Do not scale the whole canyon with carbon count."
+        },
+        {
+          "when": "A non-gold longer-chain acid receives the permitted nominal C-O environment adjustment.",
+          "do": "Allow the C-O-region anchor to move toward approximately 1240 cm^-1, versus approximately 1290 cm^-1 for the acetic environment. Preserve the measured 1280 cm^-1 anchor when replaying propanoic-acid gold; do not shift the entire fingerprint or add a duplicate band."
+        },
+        {
+          "when": "The molecular graph is ethanoic acid.",
+          "do": "Select acetic rather than shrinking this envelope."
+        }
+      ]
+    },
+    "polyol": {
+      "smarts_note": "Identify two or more non-acid OH groups attached to saturated carbons in an open-chain aliphatic molecule. Primary and secondary alcohol sites may coexist. Count alcohol OH groups, not ester oxygens or carboxylic-acid OH. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-basin",
+          "nu0": 3240,
+          "Tmin": 3.7,
+          "shape": "rounded",
+          "fwhm": 130,
+          "role": "Very deep rounded polyol OH trough; its local width is not the entire composite OH-envelope width."
+        },
+        {
+          "id": "CH-envelope-1",
+          "nu0": 2868,
+          "Tmin": 12.2,
+          "shape": "rounded",
+          "fwhm": 121,
+          "role": "Inherited CH-region envelope."
+        },
+        {
+          "id": "CH-envelope-2",
+          "nu0": 2826,
+          "Tmin": 13.7,
+          "shape": "rounded",
+          "fwhm": 121,
+          "role": "Overlapping inherited CH-region envelope."
+        },
+        {
+          "id": "fingerprint-1454",
+          "nu0": 1454,
+          "Tmin": 21.2,
+          "shape": "sharp",
+          "fwhm": 52,
+          "role": "Inherited deformation-region trough."
+        },
+        {
+          "id": "fingerprint-1372",
+          "nu0": 1372,
+          "Tmin": 28.3,
+          "shape": "rounded",
+          "fwhm": 155,
+          "role": "Inherited fingerprint envelope."
+        },
+        {
+          "id": "fingerprint-background-1268",
+          "nu0": 1268,
+          "Tmin": 35.6,
+          "shape": "broad",
+          "fwhm": 298,
+          "role": "Broad fingerprint background; not an acid OH canyon."
+        },
+        {
+          "id": "C-O-envelope-1169",
+          "nu0": 1169,
+          "Tmin": 10.5,
+          "shape": "rounded",
+          "fwhm": 156,
+          "role": "Strong inherited polyol C-O-region envelope."
+        },
+        {
+          "id": "C-O-envelope-1109",
+          "nu0": 1109,
+          "Tmin": 6.3,
+          "shape": "rounded",
+          "fwhm": 99,
+          "role": "Deep inherited polyol C-O-region trough."
+        },
+        {
+          "id": "C-O-envelope-1061",
+          "nu0": 1061,
+          "Tmin": 23.1,
+          "shape": "rounded",
+          "fwhm": 168,
+          "role": "Overlapping inherited C-O-region envelope."
+        },
+        {
+          "id": "fingerprint-992",
+          "nu0": 992,
+          "Tmin": 37.6,
+          "shape": "sharp",
+          "fwhm": 39,
+          "role": "Compact inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-928",
+          "nu0": 928,
+          "Tmin": 43.9,
+          "shape": "sharp",
+          "fwhm": 39,
+          "role": "Compact inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-764",
+          "nu0": 764,
+          "Tmin": 34.2,
+          "shape": "rounded",
+          "fwhm": 155,
+          "role": "Inherited low-wavenumber envelope."
+        }
+      ],
+      "inherit": "exam TikZ of OCC(O)CO; glycerol; 9701_w18_qp_12:q30",
+      "tweaks": [
+        {
+          "when": "The input is glycerol.",
+          "do": "Retain every supplied trough unchanged."
+        },
+        {
+          "when": "The input is a supported diol rather than the glycerol reference.",
+          "do": "Inherit the glycerol family envelope as a prior, not a measured diol spectrum. Adjust OH multiplicity modestly: the composite diol OH basin should be wider/deeper than its analogous monool basin, without treating glycerol's individual 130 cm^-1 trough width as a universal total OH width."
+        },
+        {
+          "when": "OH count increases within a supported non-gold polyol series.",
+          "do": "Modestly widen and deepen the rounded composite OH basin, respecting the transmittance floor. Do not multiply complete spectra, duplicate each C-O trough per OH, or introduce an acid canyon."
+        },
+        {
+          "when": "Additional CH2 groups occur while OH count is unchanged.",
+          "do": "Slightly deepen the CH envelope without automatically deepening OH or changing the family fingerprint."
+        }
+      ]
+    },
+    "ethanol": {
+      "smarts_note": "Recognize the molecular graph CCO as the ethanol alias. It is chemically a primary alcohol, but this explicit class uses the supplied propan-1-ol prior rather than an independently measured ethanol encoding. Reject rings and aromatic atoms.",
+      "bands": [
+        {
+          "id": "OH-envelope-background",
+          "nu0": 3570,
+          "Tmin": 55.7,
+          "shape": "broad",
+          "fwhm": 1352,
+          "role": "Inherited broad primary-alcohol background; not an acid-family assignment."
+        },
+        {
+          "id": "OH-basin",
+          "nu0": 3160,
+          "Tmin": 2.7,
+          "shape": "rounded",
+          "fwhm": 144,
+          "role": "Deep rounded OH trough copied from the primary-alcohol prior."
+        },
+        {
+          "id": "high-frequency-envelope-2780",
+          "nu0": 2780,
+          "Tmin": 1.8,
+          "shape": "rounded",
+          "fwhm": 154,
+          "role": "Inherited high-wavenumber envelope detail, not an independent ethanol measurement."
+        },
+        {
+          "id": "high-frequency-envelope-2709",
+          "nu0": 2709,
+          "Tmin": 4.7,
+          "shape": "rounded",
+          "fwhm": 123,
+          "role": "Inherited high-wavenumber envelope detail, not evidence of a new functional group."
+        },
+        {
+          "id": "C-O-region",
+          "nu0": 1140,
+          "Tmin": 3.7,
+          "shape": "rounded",
+          "fwhm": 71,
+          "role": "Deep C-O-region anchor copied from the primary-alcohol prior."
+        },
+        {
+          "id": "fingerprint-858",
+          "nu0": 858,
+          "Tmin": 58.4,
+          "shape": "sharp",
+          "fwhm": 51,
+          "role": "Inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-767",
+          "nu0": 767,
+          "Tmin": 65.6,
+          "shape": "rounded",
+          "fwhm": 256,
+          "role": "Inherited low-wavenumber envelope."
+        },
+        {
+          "id": "fingerprint-695",
+          "nu0": 695,
+          "Tmin": 53.5,
+          "shape": "sharp",
+          "fwhm": 56,
+          "role": "Inherited fingerprint detail."
+        },
+        {
+          "id": "fingerprint-562",
+          "nu0": 562,
+          "Tmin": 63.5,
+          "shape": "sharp",
+          "fwhm": 56,
+          "role": "Inherited fingerprint detail."
+        }
+      ],
+      "inherit": "exam TikZ of CCCO used explicitly as the prior for CCO; 9701_s18_qp_11:q30; not independent ethanol gold",
+      "tweaks": [
+        {
+          "when": "Reproducing the supplied ethanol class.",
+          "do": "Keep the supplied prior identical to primary_alcohol. Do not apply an automatic missing-CH2 correction to this explicit gold alias."
+        },
+        {
+          "when": "The input changes to another supported primary monool.",
+          "do": "Select primary_alcohol and apply its small environment rules relative to its propan-1-ol reference."
+        },
+        {
+          "when": "A second alcohol OH is introduced.",
+          "do": "Select polyol; do not retain the ethanol alias or stack a second copy of its spectrum."
+        }
+      ]
+    }
+  },
+  "smiles_to_family": [
+    {
+      "smiles": "CC(=O)C",
+      "family": "ketone",
+      "why": "Open-chain ketone with the carbonyl carbon bonded to two carbons; exact propanone reference."
+    },
+    {
+      "smiles": "CCOC(=O)C",
+      "family": "ester",
+      "why": "Contains C(=O)-O-C and no OH; exact ethyl ethanoate reference."
+    },
+    {
+      "smiles": "CCCO",
+      "family": "primary_alcohol",
+      "why": "One alcohol OH on a carbon with one carbon neighbour; exact propan-1-ol reference."
+    },
+    {
+      "smiles": "CC(C)O",
+      "family": "secondary_alcohol",
+      "why": "One alcohol OH on a carbon with two carbon neighbours; exact propan-2-ol reference."
+    },
+    {
+      "smiles": "CC(=O)O",
+      "family": "acetic",
+      "why": "Ethanoic-acid molecular graph selects its special-case acid envelope."
+    },
+    {
+      "smiles": "CCC(=O)O",
+      "family": "acid",
+      "why": "Open-chain monocarboxylic acid longer than ethanoic acid; exact propanoic-acid reference."
+    },
+    {
+      "smiles": "OCC(O)CO",
+      "family": "polyol",
+      "why": "Three alcohol OH groups on an acyclic carbon framework; exact glycerol reference."
+    },
+    {
+      "smiles": "CCO",
+      "family": "ethanol",
+      "why": "Explicit ethanol alias using the supplied propan-1-ol prior, not separate ethanol measurements."
+    }
+  ],
+  "generator_policy": "Parse and validate the molecular graph, rejecting every ring and aromatic atom before family selection; match equivalent SMILES by structure, not text. Select one supported functional-group family, with exact acetic and ethanol special cases and polyol taking precedence over individual alcohol degrees; acid OH is not alcohol OH, and acid or ester carbonyl is not ketone. Unsupported functionality or mixed-family molecules require an explicit additional calibration rule rather than silent nearest-family assignment or template stacking. The supplied 9701 exam-paper TikZ encodings are authoritative, not SDBS or generic textbook spectra: preserve every listed gold centre, Tmin, FWHM and shape, including unusual positions and broad or rounded exceptions. Bands are downward transmittance absorptions, with lower Tmin meaning stronger absorption; the supplied depth convention is 92 minus Tmin, so use a 92 percent-T reference baseline. Treat the rows as descriptors of an overlapping traced envelope, not independent absorption components whose depths can simply be summed and clipped; use the original trace when available or an overlap-aware reconstruction constrained by the descriptors. Sharp generally denotes compact carbonyl, C-O or CH detail, rounded denotes the alcohol OH basin, and broad denotes the acid OH canyon, but shape alone neither assigns a functional group nor overrides a gold label. Construct chemistry and widths in cm^-1, then apply the encoding's continuous two-scale descending axis, with 4000-2000 compressed and 2000-500 stretched; map both width endpoints separately when a feature crosses 2000, and never infer chemical shifts from pixel spacing. Exact references and the explicit ethanol prior receive no automatic environment correction. New supported molecules inherit their selected family's complete exam envelope with only small, bounded CH2 or OH-multiplicity changes; nominal acid C-O guides near 1290 for the acetic environment and 1240 for longer acids are distinct from measured gold positions and must not silently replace them. Keep transmittance physical, avoid artificial zero-percent plateaus, and identify transferred envelopes and environment adjustments as teaching priors rather than new measured spectra."
+}

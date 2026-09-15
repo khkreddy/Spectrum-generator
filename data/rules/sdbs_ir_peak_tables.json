@@ -1,0 +1,16 @@
+{
+  "schema": "sdbs.ir.peak_table.v1",
+  "note": "Peak lists read from the printed SDBS IR-NIDA table on the GIF (wn cm-1, %T). Not from failed frame-trace. 1716/4 is the carbonyl of propionic acid.",
+  "317-propionic-acid": {
+    "name": "propionic acid",
+    "smiles": "CCC(=O)O",
+    "sdbsno": 1033,
+    "peaks": [
+      [2986, 10], [2948, 12], [2880, 31], [2656, 38],
+      [1716, 4],
+      [1467, 18], [1416, 19], [1384, 32], [1327, 37], [1291, 25],
+      [1240, 12], [1080, 29], [995, 62], [933, 34],
+      [848, 35], [811, 44], [605, 64], [501, 60]
+    ]
+  }
+}

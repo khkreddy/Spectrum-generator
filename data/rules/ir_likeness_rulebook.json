@@ -1,0 +1,82 @@
+{
+  "model_self_id": "unknown",
+  "metric_certified": false,
+  "metric": {
+    "name": "IR-LIKENESS-1.0",
+    "formula": "On the common 4000→500 cm^-1 grid at 5 cm^-1 spacing: RMSE_T = sqrt(mean((T_generated-T_gold)^2)); r = Pearson(T_generated,T_gold); F1 = peak-matching F1 within ±40 cm^-1. Score = 40*(1-min(RMSE_T/50,1)) + 30*max(r,0) + 30*F1. Provisional pass requires score >= 55 AND RMSE_T < 25.",
+    "pass_threshold_score": 55,
+    "pass_rmse_T": 25,
+    "notes": "Likeness of exam envelopes, not pixel identity. The displayed row scores agree with the formula within rounding. Certification is withheld: n=10 but only nine items are supplied; peak extraction and matching are incompletely specified; axis calibration cannot be audited from scores; and the proposed pass threshold has not been independently validated. The scoring grid excludes 500–400 cm^-1 even though the generator covers it."
+  },
+  "what_the_scores_mean": "For the nine listed pairs, mean score is 30.48 old versus 31.12 IRSP: only +0.64 points, not evidence of a substantial overall improvement. The reported means 27.4 and 28.0 cannot be reproduced without the tenth record and aggregation policy. Under the provisional gate, old passes 1/9 and IRSP passes 0/9. The best listed pair regresses from 63.9 to 54.2; acids remain severe failures. 'ok: true' must not be interpreted as likeness acceptance.",
+  "ftir_csv_role": "do_not_use_as_9701_gold. Exclude the food/ATR traces from exam-envelope fitting and certification. The ethanol absorbance column covers only 899–1802 cm^-1; at most use it for qualitative within-window band checks after verifying provenance, units and measurement conditions. Do not infer missing O-H/C-H regions. Even a justified conversion T=100*10^(-A) gives reference-dependent relative transmission, not a complete transmission-mode 9701 exam spectrum.",
+  "rulebook_updates": [
+    {
+      "id": "METRIC-01-ACCOUNTING",
+      "rule": "Keep IR-LIKENESS-1.0 provisional until the evaluation manifest reconciles declared, supplied, evaluable and failed counts. Report invalid cases separately; never silently divide nine scores by ten or treat missing records as zero. Separate evaluation success from likeness_pass.",
+      "why": "The nine listed old scores sum to 274.3 and IRSP scores to 280.1, yielding means 30.48 and 31.12. The supplied n and means therefore require clarification in the evaluation record."
+    },
+    {
+      "id": "METRIC-02-AXES-AND-GRID",
+      "rule": "Calibrate each gold plot from its own tick anchors, including any nonuniform horizontal scale. Verify descending wavenumber, upward-increasing %T, trace selection and actual vertical units before tuning. Interpolate calibrated gold and generated traces onto the same 701-point grid without target-dependent shifts, warps, amplitude normalization or extrapolation. Insufficient coverage or calibration makes a case non-evaluable pending repair.",
+      "why": "9701_s20_qp_11:q29 has IRSP RMSE_T 43.97 and r=-0.238; 9701_s20_qp_13:q25 has RMSE_T 48.32 and r=-0.501. These justify an axis/trace audit but do not prove an axis inversion."
+    },
+    {
+      "id": "METRIC-03-PEAKS-AND-REGIONS",
+      "rule": "Freeze peak smoothing, prominence, minimum separation, endpoint handling and empty-set conventions before rescoring. Express widths and separation in cm^-1 and prominence in %T. Match minima one-to-one, maximizing match count within ±40 cm^-1 with deterministic tie-breaking. Define handling of undefined Pearson correlation. Publish every regional window; distinguish carbonyl C=O from C-O and do not add overlapping regional RMSEs.",
+      "why": "9701_s18_qp_11:q30 loses F1 from 0.500 to 0.250. Conversely, 9701_w19_qp_13:q30 gains score while RMSE worsens from 27.73 to 29.00 and r falls from 0.655 to 0.560, because F1 rises from 0 to 0.308. Peak handling materially controls the verdict."
+    },
+    {
+      "id": "GEN-01-DUAL-ZONE-CONTRACT",
+      "rule": "Retain IRSP-2.5's 4 cm^-1 sampling and deterministic FGR shapes A/B/C/E, with seeded Lorentzian fingerprint structure and chemistry-gated diagnostic C-O. Define deterministic zone ownership and a continuous blend near 1500 cm^-1. Generate bounded 0–100 %T without discontinuities or clipping plateaus. Replace the universal flat 92% baseline only with a low-dimensional, shared baseline model justified by calibrated training envelopes.",
+      "why": "9701_m23_qp_12:q38 has FGR RMSE 13.43 but FPR 31.37; 9701_w19_qp_13:q30 has FGR 20.20 but FPR 43.80. Zone-specific correction is warranted, not an indiscriminate increase in spectral complexity."
+    },
+    {
+      "id": "GEN-02-ACID-ENVELOPE",
+      "rule": "After calibration passes, fit a shared acid-family envelope: broad, potentially asymmetric super-Gaussian O-H over approximately 2500–3300 cm^-1, embedded C-H structure, and a separate carbonyl near the chemically appropriate acid position. Tune center, width, depth and overlap using signed residuals; do not infer the direction of a correction from RMSE alone.",
+      "why": "9701_s20_qp_13:q25 has OH/CH/FGR RMSE 61.97/56.44/53.37. 9701_s20_qp_11:q29 has OH/CH/C=O RMSE 47.88/51.28/48.50. Fingerprint embellishment cannot repair these dominant functional-region errors."
+    },
+    {
+      "id": "GEN-03-ALCOHOL-OH-CH",
+      "rule": "Tune alcohol Gaussian O-H and Lorentzian C-H widths, depths and overlap jointly, with shared parameters and limited chemistry-conditioned modifiers. Treat polyol overlap and saturation explicitly rather than scaling O-H depth linearly with hydroxyl count. Preserve the old propan-1-ol result as a regression benchmark, not a trace to copy.",
+      "why": "9701_s18_qp_11:q30 has OH RMSE 21.13 but CH 47.85 and regresses by 9.7 score points. 9701_w19_qp_11:q30 has FGR RMSE 36.07. Glycerol, 9701_w23_qp_11:q39, has OH/CH RMSE 27.65/39.90."
+    },
+    {
+      "id": "GEN-04-DIAGNOSTIC-CARBONYL",
+      "rule": "Calibrate carbonyl center, width and depth by functional-group family before adding more fingerprint peaks. Require chemistry-gated presence and absence: alcohols must not gain spurious carbonyl bands. Inspect signed residuals to distinguish displacement, excessive width, depth error and baseline error.",
+      "why": "The two acetone cases, 9701_m23_qp_12:q38 and 9701_s18_qp_12:q30, have C=O RMSE 28.66 and 34.30. Alcohol carbonyl-region errors are already small in 9701_w19_qp_13:q30 and 9701_w23_qp_11:q39: 1.43 and 0.58."
+    },
+    {
+      "id": "GEN-05-FINGERPRINT-DISCIPLINE",
+      "rule": "Place diagnostic C-O bands from functional-group chemistry before adding bounded background jags. Control jag density, prominence and width so random structure cannot manufacture peak matches. Derive seeds from canonical molecular identity, generator version and a documented global seed; never from exam UID, and never select the best seed against a target.",
+      "why": "9701_w19_qp_13:q30 has C-O/FPR RMSE 50.95/43.80; 9701_w23_qp_11:q39 has 49.07/48.65. More jags alone would not establish better diagnostic-envelope fidelity."
+    },
+    {
+      "id": "VALIDATION-01-NO-POLYLINE-MEMORIZATION",
+      "rule": "Fit a small, shared parameter set using training-only band and envelope summaries. Keep all traces of a molecule together when testing molecular generalization, and prevent paper/trace duplication across splits. Report paired score, RMSE, r, F1 and pass-rate changes by chemical family. Retain a separate chemical-correctness audit; the composite score alone is not a chemical validity certificate.",
+      "why": "Acetone, propan-1-ol and propan-2-ol each occur in multiple listed exam items. Same-molecule envelopes differ substantially, and the nine-pair mean improvement of 0.64 points conceals alcohol and acid regressions."
+    }
+  ],
+  "executed_fit_2026-09-14": {
+    "generator": "SMILES → family → shared IRSP-2.5 parameters in irsp_fitted.json (no gold polyline lookup)",
+    "identity_floor": "re-emit gold T(ν) scores 94–100",
+    "reconstruction_rmse_T": {"propan-1-ol": 16.8, "acetone": 13.9, "propan-2-ol": 23.8, "glycerol": 31.0, "acetic_acid": 33.0, "propanoic_acid": 35.7},
+    "loo_rmse_T": {"propan-1-ol": 17.2, "propan-2-ol": 23.8, "glycerol": 31.3, "acetic_acid": 34.5, "propanoic_acid": 35.8},
+    "exam_tikZ_score_fitted": {"9701_s18_qp_11:q30": 62.5, "9701_s18_qp_12:q30": 55.3},
+    "note": "Alcohols/ketones improved; acids still fail a shared envelope. 100% needs gold T(ν); SMILES-only ceiling is the LOO RMSE above."
+  },
+  "first_principles_2026-09-14": {
+    "astra_ping": "resp_0a2ebfa64a6cdfb5006aa7de53a27c87d1910748b7a35f61e8",
+    "astra_brainstorm": "resp_06edc183c3bfdf3a006aa7de6b88ec87d1ac5ecfe928de343c",
+    "identity_floor": "Re-rendering exam gold T(ν) through render_ir_from_curve yields score 94–100 on most overlap papers (s18_qp_11 = 100.0). Failure of chemistry-only IR is not TikZ syntax; it is the wrong T(ν).",
+    "problem": "Recover the exam drawing T(ν), not invent chemistry from SMILES alone."
+  },
+  "next_finetune": [
+    "1. Recover the missing evaluation record, reconcile denominators, and audit gold tick calibration, %T direction and trace selection—starting with both acids. Recompute the existing generators before changing their parameters.",
+    "2. Freeze the complete metric implementation and regional windows. Validate the provisional threshold against independent human judgments of acceptable exam-envelope likeness and chemically wrong negative controls.",
+    "3. Tune shared acid O-H/C-H/carbonyl parameters on audited training data. Use signed residuals and low-dimensional envelope summaries, not pointwise polyline memorization.",
+    "4. Repair alcohol O-H/C-H overlap and acetone carbonyl morphology. Use the old 9701_s18_qp_11:q30 result as a regression check while requiring improvements across other training examples.",
+    "5. Tune chemistry-conditioned C-O and fingerprint envelope statistics, then jag density and prominence. Fix seeds in advance and assess seed sensitivity separately; do not maximize score by seed search.",
+    "6. Run grouped held-out comparisons against both old and unchanged IRSP-2.5. Report every case, failures, paired deltas, family results and uncertainty. Promote the revision only for reproducible gains without concealed chemical or regional regressions."
+  ]
+}

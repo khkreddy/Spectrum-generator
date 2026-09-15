@@ -1,0 +1,848 @@
+{
+  "harvest_trust": {
+    "cnmr": "Most useful harvest channel, especially for relative ordering and separated resonances, but not uniformly accurate to ±3 ppm. Nitrobenzene supports conventional substituent increments. Several aliphatic methyl positions appear about 4–5 ppm high, and acetone 195.1 is inconsistent with its usual carbonyl near 207 ppm. Benzaldehyde and toluene each require five chemically distinct carbon environments despite four harvested sticks. Use chemistry-scale priors, flag suspect positions, and do not fit a global offset from this pack. Intensities are not carbon counts.",
+    "hnmr": "Use as provisional envelope positions, not complete chemical-environment counts or multiplicities. Nitrobenzene and the alcohol/ester regions provide useful checks. Benzaldehyde 8.38/6.66/6.38 and acetic-acid methyl 3.46 are inconsistent with normal assignments by more than the stated tolerance. Acetone methyl 2.53 is also somewhat high. n_lines is not multiplicity, and I is not an integral. Exchangeable-proton shifts are solvent-, concentration-, and temperature-dependent.",
+    "ir": "Do not retune IR in this task. Ignore flat_fail rows for IR calibration; their NMR data remain independently assessable. Even ok rows contain false minima. Ethanol OH near 3230 cm^-1 and C-O near 1050 cm^-1 are usable qualitative checks.",
+    "ms": "Untrusted axis calibration and no usable calibrated MS peak table supplied. Do not infer or emit experimental m/z values from this harvest."
+  },
+  "benzene_13C_base": 128.5,
+  "benzene_1H_base": 7.27,
+  "c13_increments": [
+    {
+      "group": "NO2",
+      "smarts": "[c:1]-[N+;X3](=[O;X1])-[O-;X1]",
+      "ipso": 20.0,
+      "ortho": -5.0,
+      "meta": 1.0,
+      "para": 6.0,
+      "calibrated_to": "Conventional increments checked against nitrobenzene harvest; all four predicted positions are within 2 ppm."
+    },
+    {
+      "group": "CH3",
+      "smarts": "[c:1]-[C;X4;H3]",
+      "ipso": 9.1,
+      "ortho": 0.7,
+      "meta": -0.1,
+      "para": -2.9,
+      "calibrated_to": "Chemistry prior; toluene harvest supports ordering but incompletely resolves the four ring-carbon environments."
+    },
+    {
+      "group": "CH2R",
+      "smarts": "[c:1]-[C;X4;H2]-[#6]",
+      "ipso": 15.7,
+      "ortho": -0.6,
+      "meta": 0.0,
+      "para": -2.6,
+      "calibrated_to": "Ethylbenzene-like chemistry prior; not independently calibrated by this pack."
+    },
+    {
+      "group": "CHR2",
+      "smarts": "[c:1]-[C;X4;H1](-[#6])-[#6]",
+      "ipso": 20.1,
+      "ortho": -2.0,
+      "meta": -0.1,
+      "para": -2.4,
+      "calibrated_to": "Isopropylbenzene-like chemistry prior; not independently calibrated by this pack."
+    },
+    {
+      "group": "CR3",
+      "smarts": "[c:1]-[C;X4;H0](-[#6])(-[#6])-[#6]",
+      "ipso": 22.0,
+      "ortho": -3.0,
+      "meta": -0.3,
+      "para": -2.8,
+      "calibrated_to": "tert-Butylbenzene-like chemistry prior; not independently calibrated by this pack."
+    },
+    {
+      "group": "OH",
+      "smarts": "[c:1]-[O;X2;H1;+0]",
+      "ipso": 26.9,
+      "ortho": -12.7,
+      "meta": 1.1,
+      "para": -7.4,
+      "calibrated_to": "Neutral phenol chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "OR",
+      "smarts": "[c:1]-[O;X2;H0;+0]-[C;X4]",
+      "ipso": 31.1,
+      "ortho": -14.6,
+      "meta": 1.0,
+      "para": -7.8,
+      "calibrated_to": "Anisole-like aryl alkyl ether chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "OCOR",
+      "smarts": "[c:1]-[O;X2;H0;+0]-[C;X3](=[O;X1])-[#6]",
+      "ipso": 22.3,
+      "ortho": -6.9,
+      "meta": 0.9,
+      "para": -2.6,
+      "calibrated_to": "Phenyl ester chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "NH2",
+      "smarts": "[c:1]-[N;X3;H2;+0]",
+      "ipso": 17.8,
+      "ortho": -13.4,
+      "meta": 0.8,
+      "para": -9.9,
+      "calibrated_to": "Neutral aniline chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "NHR",
+      "smarts": "[c:1]-[N;X3;H1;+0]-[C;X4]",
+      "ipso": 20.5,
+      "ortho": -15.6,
+      "meta": 0.6,
+      "para": -11.4,
+      "calibrated_to": "Neutral N-alkylaniline chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "NR2",
+      "smarts": "[c:1]-[N;X3;H0;+0](-[C;X4])-[C;X4]",
+      "ipso": 22.0,
+      "ortho": -15.5,
+      "meta": 0.5,
+      "para": -11.5,
+      "calibrated_to": "Neutral N,N-dialkylaniline chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "NHCOR",
+      "smarts": "[c:1]-[N;X3;H1;+0]-[C;X3](=[O;X1])-[#6]",
+      "ipso": 9.2,
+      "ortho": -8.5,
+      "meta": 0.5,
+      "para": -4.5,
+      "calibrated_to": "Acetanilide-like chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "F",
+      "smarts": "[c:1]-[F]",
+      "ipso": 34.5,
+      "ortho": -13.0,
+      "meta": 1.3,
+      "para": -4.2,
+      "calibrated_to": "Fluorobenzene chemistry prior; values describe resonance centers, not C-F split lines."
+    },
+    {
+      "group": "Cl",
+      "smarts": "[c:1]-[Cl]",
+      "ipso": 6.0,
+      "ortho": 0.1,
+      "meta": 1.3,
+      "para": -2.1,
+      "calibrated_to": "Chlorobenzene chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "Br",
+      "smarts": "[c:1]-[Br]",
+      "ipso": -6.0,
+      "ortho": 3.1,
+      "meta": 1.7,
+      "para": -1.6,
+      "calibrated_to": "Bromobenzene chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "I",
+      "smarts": "[c:1]-[I]",
+      "ipso": -34.1,
+      "ortho": 9.0,
+      "meta": 1.6,
+      "para": -0.7,
+      "calibrated_to": "Iodobenzene chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "CHO",
+      "smarts": "[c:1]-[C;X3;H1](=[O;X1])",
+      "ipso": 8.1,
+      "ortho": 1.3,
+      "meta": 0.4,
+      "para": 5.8,
+      "calibrated_to": "Benzaldehyde chemistry prior; harvest is consistent with incompletely resolved ring carbons, not a complete assignment."
+    },
+    {
+      "group": "COR",
+      "smarts": "[c:1]-[C;X3](=[O;X1])-[#6]",
+      "ipso": 8.6,
+      "ortho": -0.2,
+      "meta": 0.1,
+      "para": 4.6,
+      "calibrated_to": "Aryl ketone chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "COOH",
+      "smarts": "[c:1]-[C;X3](=[O;X1])-[O;X2;H1;+0]",
+      "ipso": 1.7,
+      "ortho": 1.7,
+      "meta": 0.0,
+      "para": 5.3,
+      "calibrated_to": "Neutral benzoic-acid chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "COOR",
+      "smarts": "[c:1]-[C;X3](=[O;X1])-[O;X2;H0;+0]-[#6]",
+      "ipso": 1.8,
+      "ortho": 1.1,
+      "meta": -0.1,
+      "para": 4.4,
+      "calibrated_to": "Benzoate ester chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "CONR2",
+      "smarts": "[c:1]-[C;X3](=[O;X1])-[N;X3;+0]",
+      "ipso": 5.9,
+      "ortho": -1.0,
+      "meta": 0.1,
+      "para": 3.9,
+      "calibrated_to": "Benzamide-like chemistry prior, including N-H amides; not calibrated by this pack."
+    },
+    {
+      "group": "CN",
+      "smarts": "[c:1]-[C;X2]#[N;X1]",
+      "ipso": -16.2,
+      "ortho": 3.8,
+      "meta": 0.8,
+      "para": 4.3,
+      "calibrated_to": "Benzonitrile chemistry prior; not calibrated by this pack."
+    },
+    {
+      "group": "CF3",
+      "smarts": "[c:1]-[C;X4]([F])([F])[F]",
+      "ipso": 2.1,
+      "ortho": -3.1,
+      "meta": 0.2,
+      "para": 3.6,
+      "calibrated_to": "Trifluoromethylbenzene chemistry prior; values describe resonance centers, not C-F split lines."
+    }
+  ],
+  "h1_increments": [
+    {
+      "group": "NO2",
+      "ortho": 0.95,
+      "meta": 0.26,
+      "para": 0.38
+    },
+    {
+      "group": "CH3",
+      "ortho": -0.15,
+      "meta": -0.1,
+      "para": -0.17
+    },
+    {
+      "group": "CH2R",
+      "ortho": -0.12,
+      "meta": -0.08,
+      "para": -0.12
+    },
+    {
+      "group": "CHR2",
+      "ortho": -0.1,
+      "meta": -0.07,
+      "para": -0.12
+    },
+    {
+      "group": "CR3",
+      "ortho": 0.1,
+      "meta": 0.0,
+      "para": -0.07
+    },
+    {
+      "group": "OH",
+      "ortho": -0.52,
+      "meta": -0.12,
+      "para": -0.42
+    },
+    {
+      "group": "OR",
+      "ortho": -0.4,
+      "meta": -0.02,
+      "para": -0.37
+    },
+    {
+      "group": "OCOR",
+      "ortho": -0.2,
+      "meta": 0.05,
+      "para": -0.07
+    },
+    {
+      "group": "NH2",
+      "ortho": -0.65,
+      "meta": -0.15,
+      "para": -0.55
+    },
+    {
+      "group": "NHR",
+      "ortho": -0.65,
+      "meta": -0.12,
+      "para": -0.6
+    },
+    {
+      "group": "NR2",
+      "ortho": -0.6,
+      "meta": -0.05,
+      "para": -0.57
+    },
+    {
+      "group": "NHCOR",
+      "ortho": 0.3,
+      "meta": 0.05,
+      "para": -0.15
+    },
+    {
+      "group": "F",
+      "ortho": -0.25,
+      "meta": 0.03,
+      "para": -0.2
+    },
+    {
+      "group": "Cl",
+      "ortho": 0.03,
+      "meta": -0.02,
+      "para": -0.08
+    },
+    {
+      "group": "Br",
+      "ortho": 0.22,
+      "meta": -0.08,
+      "para": -0.02
+    },
+    {
+      "group": "I",
+      "ortho": 0.43,
+      "meta": -0.23,
+      "para": 0.03
+    },
+    {
+      "group": "CHO",
+      "ortho": 0.6,
+      "meta": 0.25,
+      "para": 0.35
+    },
+    {
+      "group": "COR",
+      "ortho": 0.68,
+      "meta": 0.2,
+      "para": 0.3
+    },
+    {
+      "group": "COOH",
+      "ortho": 0.8,
+      "meta": 0.16,
+      "para": 0.3
+    },
+    {
+      "group": "COOR",
+      "ortho": 0.75,
+      "meta": 0.15,
+      "para": 0.28
+    },
+    {
+      "group": "CONR2",
+      "ortho": 0.5,
+      "meta": 0.15,
+      "para": 0.25
+    },
+    {
+      "group": "CN",
+      "ortho": 0.35,
+      "meta": 0.15,
+      "para": 0.28
+    },
+    {
+      "group": "CF3",
+      "ortho": 0.35,
+      "meta": 0.15,
+      "para": 0.23
+    }
+  ],
+  "aliphatic_13C_bins": [
+    {
+      "class": "methane_C",
+      "ppm": -2.3,
+      "evidence": "Small-molecule chemistry prior; override generic alkane bins."
+    },
+    {
+      "class": "ethane_CH3",
+      "ppm": 5.7,
+      "evidence": "Small-molecule chemistry prior; override generic alkane bins."
+    },
+    {
+      "class": "propane_CH3",
+      "ppm": 16.0,
+      "evidence": "Small-molecule chemistry prior."
+    },
+    {
+      "class": "propane_CH2",
+      "ppm": 16.3,
+      "evidence": "Small-molecule chemistry prior; not a generic internal-chain CH2."
+    },
+    {
+      "class": "alkane_terminal_CH3",
+      "ppm": 14.0,
+      "evidence": "Unfunctionalized straight-chain alkane prior; branching and nearby functional groups require overrides."
+    },
+    {
+      "class": "alkane_CH2_next_to_terminal_CH3",
+      "ppm": 23.0,
+      "evidence": "Straight-chain alkane prior, after excluding propane and functionalized sites."
+    },
+    {
+      "class": "alkane_internal_CH2",
+      "ppm": 30.0,
+      "evidence": "Coarse acyclic alkane prior; local branching can move this substantially."
+    },
+    {
+      "class": "alkane_CH",
+      "ppm": 30.0,
+      "evidence": "Low-confidence saturated hydrocarbon methine fallback."
+    },
+    {
+      "class": "alkane_quaternary_C",
+      "ppm": 35.0,
+      "evidence": "Low-confidence saturated hydrocarbon quaternary-carbon fallback."
+    },
+    {
+      "class": "Ar-CH3",
+      "ppm": 21.3,
+      "evidence": "Toluene chemistry prior; harvested 25.8 is about 4.5 ppm high and is not adopted as the chemical shift."
+    },
+    {
+      "class": "Ar-CH2-C",
+      "ppm": 29.0,
+      "evidence": "Ethylbenzene-like benzylic CH2 prior; excludes carbons also bonded to heteroatoms or carbonyl carbons."
+    },
+    {
+      "class": "methanol_CH3OH",
+      "ppm": 49.5,
+      "evidence": "Methanol chemistry prior; distinguish from primary-alcohol CH2."
+    },
+    {
+      "class": "ethanol_CH2OH",
+      "ppm": 58.5,
+      "evidence": "Chemistry-scale ethanol prior; harvest 61.3 differs by 2.8 ppm."
+    },
+    {
+      "class": "primary_alcohol_CH2OH_other",
+      "ppm": 64.5,
+      "evidence": "1-Propanol-like chemistry prior; harvest 67.6 is about 3.1 ppm high. Branching broadens applicability uncertainty."
+    },
+    {
+      "class": "secondary_alcohol_CHOH",
+      "ppm": 67.0,
+      "evidence": "Coarse secondary-alcohol bin; 2-propanol harvest 67.2. Use the specific 2-propanol override when matched."
+    },
+    {
+      "class": "2-propanol_CHOH",
+      "ppm": 64.5,
+      "evidence": "Chemistry-scale 2-propanol prior; harvest 67.2 differs by 2.7 ppm."
+    },
+    {
+      "class": "tertiary_alcohol_COH",
+      "ppm": 73.0,
+      "evidence": "Chemistry prior; this carbon has no attached proton."
+    },
+    {
+      "class": "ethanol_CH3",
+      "ppm": 18.5,
+      "evidence": "Chemistry prior; harvest 22.6 suggests an approximately 4 ppm mapping discrepancy."
+    },
+    {
+      "class": "1-propanol_middle_CH2",
+      "ppm": 25.8,
+      "evidence": "Chemistry prior; harvest 30.3 is about 4.5 ppm high."
+    },
+    {
+      "class": "1-propanol_terminal_CH3",
+      "ppm": 10.5,
+      "evidence": "Chemistry prior; harvest 15.0 is about 4.5 ppm high."
+    },
+    {
+      "class": "2-propanol_CH3",
+      "ppm": 25.3,
+      "evidence": "Chemistry prior; harvest 29.6 is about 4.3 ppm high. Both methyl carbons form one environment."
+    },
+    {
+      "class": "Ar-O-CH3",
+      "ppm": 55.5,
+      "evidence": "Anisole-like chemistry prior."
+    },
+    {
+      "class": "alkyl-O-CH3",
+      "ppm": 58.5,
+      "evidence": "Simple methyl ether chemistry prior; excludes methyl esters."
+    },
+    {
+      "class": "ether_O-CH2",
+      "ppm": 66.0,
+      "evidence": "Simple dialkyl ether chemistry prior; benzylic and multiply oxygenated carbons require separate treatment."
+    },
+    {
+      "class": "ether_O-CH",
+      "ppm": 75.0,
+      "evidence": "Coarse secondary ether-carbon chemistry prior."
+    },
+    {
+      "class": "ester_O-CH3",
+      "ppm": 52.0,
+      "evidence": "Methyl ester chemistry prior."
+    },
+    {
+      "class": "ester_O-CH2",
+      "ppm": 61.0,
+      "evidence": "Ethyl acetate harvest 63.8; chemistry-scale prior is within 2.8 ppm."
+    },
+    {
+      "class": "ester_O-CH",
+      "ppm": 69.0,
+      "evidence": "Isopropyl ester-like chemistry prior."
+    },
+    {
+      "class": "O-CH2-CH3_terminal_CH3",
+      "ppm": 14.5,
+      "evidence": "Ethyl ether/ester chemistry prior, excluding ethanol; ethyl acetate harvest 18.8 appears about 4 ppm high."
+    },
+    {
+      "class": "acid_or_ester_CO-CH3",
+      "ppm": 21.0,
+      "evidence": "Acetic acid and acetate chemistry prior; harvest 25.1 and 25.4 appear about 4 ppm high."
+    },
+    {
+      "class": "amide_CO-CH3",
+      "ppm": 23.0,
+      "evidence": "Acetamide-like chemistry prior."
+    },
+    {
+      "class": "aliphatic_ketone_CO-CH3",
+      "ppm": 30.5,
+      "evidence": "Acetone harvest 33.1 supports the broad methyl-carbon region; conventional acetone is near 31 ppm."
+    },
+    {
+      "class": "aryl_ketone_CO-CH3",
+      "ppm": 26.5,
+      "evidence": "Acetophenone-like chemistry prior."
+    },
+    {
+      "class": "acid_or_ester_alpha_CH2",
+      "ppm": 34.0,
+      "evidence": "Simple saturated acid/ester alpha-carbon chemistry prior."
+    },
+    {
+      "class": "ketone_alpha_CH2",
+      "ppm": 42.0,
+      "evidence": "Coarse saturated ketone alpha-carbon chemistry prior."
+    },
+    {
+      "class": "neutral_amine_N-CH3",
+      "ppm": 38.0,
+      "evidence": "Low-confidence amine methyl fallback; primary, secondary, and tertiary amines differ."
+    },
+    {
+      "class": "neutral_amine_N-CH2",
+      "ppm": 45.0,
+      "evidence": "Low-confidence neutral amine alpha-carbon fallback; protonated amines require different rules."
+    },
+    {
+      "class": "aryl_aldehyde_CO",
+      "ppm": 192.0,
+      "evidence": "Benzaldehyde harvest 192.3 directly supports this bin."
+    },
+    {
+      "class": "aliphatic_aldehyde_CO",
+      "ppm": 202.0,
+      "evidence": "Saturated aldehyde chemistry prior."
+    },
+    {
+      "class": "aliphatic_ketone_CO",
+      "ppm": 207.0,
+      "evidence": "Saturated ketone chemistry prior; acetone harvest 195.1 is rejected as inconsistent with its expected carbonyl region."
+    },
+    {
+      "class": "aryl_ketone_CO",
+      "ppm": 198.0,
+      "evidence": "Acetophenone-like chemistry prior; do not use for saturated acetone."
+    },
+    {
+      "class": "aliphatic_carboxylic_acid_CO",
+      "ppm": 179.0,
+      "evidence": "Acetic acid harvest 178.8."
+    },
+    {
+      "class": "aryl_carboxylic_acid_CO",
+      "ppm": 172.5,
+      "evidence": "Benzoic-acid-like chemistry prior."
+    },
+    {
+      "class": "aliphatic_ester_CO",
+      "ppm": 171.0,
+      "evidence": "Ethyl acetate harvest 171.8."
+    },
+    {
+      "class": "aryl_ester_CO",
+      "ppm": 167.0,
+      "evidence": "Benzoate ester chemistry prior; aryl means the carbonyl carbon is directly attached to the ring."
+    },
+    {
+      "class": "aliphatic_amide_CO",
+      "ppm": 173.0,
+      "evidence": "Simple saturated amide chemistry prior."
+    },
+    {
+      "class": "aryl_amide_CO",
+      "ppm": 169.0,
+      "evidence": "Benzamide-like chemistry prior."
+    },
+    {
+      "class": "nitrile_C",
+      "ppm": 118.0,
+      "evidence": "Simple nitrile chemistry prior; count the nitrile carbon separately from the ring ipso carbon."
+    },
+    {
+      "class": "Ar-CF3_carbon",
+      "ppm": 124.0,
+      "evidence": "Trifluoromethylbenzene-like chemistry prior; one carbon environment even when C-F coupling produces four lines."
+    }
+  ],
+  "aliphatic_1H_bins": [
+    {
+      "class": "methane_H",
+      "ppm": 0.23,
+      "evidence": "Small-molecule chemistry prior."
+    },
+    {
+      "class": "alkane_CH3",
+      "ppm": 0.9,
+      "evidence": "Simple saturated hydrocarbon prior; functionalized and benzylic sites override."
+    },
+    {
+      "class": "alkane_CH2",
+      "ppm": 1.35,
+      "evidence": "Coarse saturated hydrocarbon prior."
+    },
+    {
+      "class": "alkane_CH",
+      "ppm": 1.6,
+      "evidence": "Coarse saturated hydrocarbon prior."
+    },
+    {
+      "class": "Ar-CH3",
+      "ppm": 2.33,
+      "evidence": "Toluene harvest 2.44 supports this prior."
+    },
+    {
+      "class": "Ar-CH2-C",
+      "ppm": 2.65,
+      "evidence": "Ethylbenzene-like chemistry prior."
+    },
+    {
+      "class": "Ar-CH-C2",
+      "ppm": 2.9,
+      "evidence": "Isopropylbenzene-like chemistry prior."
+    },
+    {
+      "class": "alcohol_CH2-OH",
+      "ppm": 3.65,
+      "evidence": "Ethanol 3.75 and 1-propanol 3.71 support this bin."
+    },
+    {
+      "class": "alcohol_CH-OH",
+      "ppm": 4.0,
+      "evidence": "2-Propanol has harvested candidates 4.34, 3.87, and 3.45; the pack does not securely assign all three. Use a chemistry prior rather than three generated CH environments."
+    },
+    {
+      "class": "methanol_CH3-OH",
+      "ppm": 3.35,
+      "evidence": "Methanol chemistry prior; solvent dependent."
+    },
+    {
+      "class": "alcohol_adjacent_CH3",
+      "ppm": 1.25,
+      "evidence": "Ethanol harvest 1.52 and 2-propanol 1.41; approximate shared bin for CH3 attached to a carbon bearing OH."
+    },
+    {
+      "class": "alcohol_beta_CH2",
+      "ppm": 1.6,
+      "evidence": "1-Propanol harvest 1.84 supports this approximate region."
+    },
+    {
+      "class": "Ar-O-CH3",
+      "ppm": 3.8,
+      "evidence": "Anisole-like chemistry prior."
+    },
+    {
+      "class": "alkyl-O-CH3",
+      "ppm": 3.35,
+      "evidence": "Simple methyl ether chemistry prior."
+    },
+    {
+      "class": "ether_O-CH2",
+      "ppm": 3.45,
+      "evidence": "Simple dialkyl ether chemistry prior."
+    },
+    {
+      "class": "ether_O-CH",
+      "ppm": 3.65,
+      "evidence": "Coarse secondary ether-proton chemistry prior."
+    },
+    {
+      "class": "ester_O-CH3",
+      "ppm": 3.75,
+      "evidence": "Methyl ester chemistry prior."
+    },
+    {
+      "class": "ester_O-CH2",
+      "ppm": 4.12,
+      "evidence": "Ethyl acetate harvest 4.08."
+    },
+    {
+      "class": "ester_O-CH",
+      "ppm": 5.0,
+      "evidence": "Isopropyl ester-like chemistry prior."
+    },
+    {
+      "class": "O-CH2-CH3_terminal_H",
+      "ppm": 1.25,
+      "evidence": "Ethyl acetate harvest 1.52; use the specific alcohol rule for ethanol."
+    },
+    {
+      "class": "acid_or_ester_CO-CH3",
+      "ppm": 2.08,
+      "evidence": "Ethyl acetate harvest 2.26 supports this bin; acetic-acid harvest 3.46 is not chemically credible for its methyl and is not adopted."
+    },
+    {
+      "class": "amide_CO-CH3",
+      "ppm": 2.05,
+      "evidence": "Acetamide-like chemistry prior."
+    },
+    {
+      "class": "aliphatic_ketone_CO-CH3",
+      "ppm": 2.17,
+      "evidence": "Acetone chemistry prior; harvest 2.53 is 0.36 ppm higher and should be flagged rather than forced into the fit."
+    },
+    {
+      "class": "aryl_ketone_CO-CH3",
+      "ppm": 2.6,
+      "evidence": "Acetophenone-like chemistry prior."
+    },
+    {
+      "class": "carbonyl_alpha_CH2",
+      "ppm": 2.4,
+      "evidence": "Coarse saturated carbonyl alpha-proton prior; excludes protons between two electron-withdrawing groups."
+    },
+    {
+      "class": "carbonyl_alpha_CH",
+      "ppm": 2.65,
+      "evidence": "Coarse saturated carbonyl alpha-methine prior."
+    },
+    {
+      "class": "neutral_amine_alpha_H",
+      "ppm": 2.6,
+      "evidence": "Low-confidence neutral amine alpha-proton fallback; protonated amines require separate treatment."
+    },
+    {
+      "class": "nitrile_alpha_H",
+      "ppm": 2.35,
+      "evidence": "Simple nitrile alpha-proton chemistry prior."
+    },
+    {
+      "class": "aryl_CHO",
+      "ppm": 10.0,
+      "evidence": "Benzaldehyde chemistry prior; harvested 8.38 is inconsistent with a normal benzaldehyde proton."
+    },
+    {
+      "class": "aliphatic_CHO",
+      "ppm": 9.7,
+      "evidence": "Saturated aldehyde chemistry prior."
+    },
+    {
+      "class": "alcohol_OH",
+      "ppm": 2.5,
+      "range_ppm": [
+        0.5,
+        5.5
+      ],
+      "exchangeable": true,
+      "evidence": "Ethanol harvest 3.06 is plausible. This is only a display default, not a ±0.3 ppm prediction."
+    },
+    {
+      "class": "phenol_OH",
+      "ppm": 5.5,
+      "range_ppm": [
+        4.0,
+        12.0
+      ],
+      "exchangeable": true,
+      "evidence": "Chemistry prior; intramolecular hydrogen bonding can strongly deshield."
+    },
+    {
+      "class": "carboxylic_acid_OH",
+      "ppm": 11.5,
+      "range_ppm": [
+        10.0,
+        13.0
+      ],
+      "exchangeable": true,
+      "evidence": "Acetic acid harvest 10.61 is plausible within the broad condition-dependent range."
+    },
+    {
+      "class": "amine_NH",
+      "ppm": 2.5,
+      "range_ppm": [
+        0.5,
+        5.0
+      ],
+      "exchangeable": true,
+      "evidence": "Neutral amine display default, not a precise prediction."
+    },
+    {
+      "class": "amide_NH",
+      "ppm": 7.5,
+      "range_ppm": [
+        5.0,
+        10.0
+      ],
+      "exchangeable": true,
+      "evidence": "Amide display default; hydrogen bonding and restricted rotation can affect shifts and counts."
+    }
+  ],
+  "nitrobenzene_predicted_13C": [
+    {
+      "role": "ipso",
+      "ppm": 148.5,
+      "C": 1
+    },
+    {
+      "role": "ortho",
+      "ppm": 123.5,
+      "C": 2
+    },
+    {
+      "role": "meta",
+      "ppm": 129.5,
+      "C": 2
+    },
+    {
+      "role": "para",
+      "ppm": 134.5,
+      "C": 1
+    }
+  ],
+  "nitrobenzene_predicted_1H": [
+    {
+      "role": "ortho",
+      "ppm": 8.22,
+      "H": 2
+    },
+    {
+      "role": "meta",
+      "ppm": 7.53,
+      "H": 2
+    },
+    {
+      "role": "para",
+      "ppm": 7.65,
+      "H": 1
+    }
+  ],
+  "patch_notes": "Scope: neutral, nonfused substituted benzene rings and simple acyclic saturated aliphatic environments, including the listed carbonyl derivatives. Values not supported by a stated harvest check are provisional chemistry priors, not experimentally fitted results. The pack cannot independently determine a full substituent library. Alkyl-substituent aromatic increments assume ordinary hydrocarbon side chains. Heteroaromatics, fused rings, charged species, alkenes, alkynes other than the listed nitrile functionality, aliphatic halides, multiply functionalized centers, and rigid stereochemical cases need separate rules or an unsupported/low-confidence flag.\n\n_c_shift: identify each six-membered all-carbon aromatic ring and its exocyclic substituent attachments. Atom map :1 in every aromatic SMARTS identifies the ring ipso atom. Normalize ordinary nitro representations before matching. Classify each attachment once with the most specific applicable group; deduplicate SMARTS embeddings by ring, attachment atom, and substituent bond. Do not accumulate multiple matches for one substituent. For each ring carbon, start at 128.5 and add one increment per substituent according to distance along that ring: 0=ipso, 1=ortho, 2=meta, 3=para. A carbon bearing one substituent still receives ortho/meta/para effects from the other substituents. Never add one substituent once per atom in its SMARTS. Predict exocyclic carbonyl, nitrile, CF3, alkoxy, and alkyl carbons separately with absolute environment bins. Preserve unusual legitimate ring shifts such as aryl C-I near 94 ppm; do not clamp all aromatic carbons to 120–140 ppm.\n\n_h_class: for each aromatic carbon actually bearing H, start at 7.27 and add the ortho/meta/para increment from every substituent on its ring, reusing the same attachment classifications as _c_shift. There is no ipso proton on a substituted site. Do not collapse all aromatic H into one class. Aldehyde H belongs to the exocyclic aldehyde carbon, not to the aromatic increment calculation. Aliphatic bins are absolute centers, not additive increments. Apply exact small-molecule and specific functional-group contexts before generic alkane, ether, amine, or alpha-carbonyl fallbacks. Distinguish ester O-CH2 from alcohol CH2OH and distinguish aromatic-ring attachment through O, N, or a carbonyl carbon. An atom matching multiple functional contexts needs an explicit combined rule or a low-confidence result rather than summed absolute bins.\n\nCounts: determine chemical equivalence from the full molecular graph and relevant stereochemistry, not rounded shifts, local class labels, harvested stick counts, or intensity. Symmetry classes from RDKit CanonicalRankAtoms with breakTies=False can support carbon grouping; preserve chemically equivalent atoms rather than assigning each a unique canonical index. Assume an achiral solution and ordinary rapid methyl rotation. Proton counting additionally needs stereotopicity and exchange handling: graph ranks alone do not reliably distinguish diastereotopic CH2 hydrogens. Flag such cases if explicit stereotopicity logic is absent. Use equivalent-atom counts as carbon degeneracy and attached-proton totals as H integration, not as predicted peak height. Restricted amide rotation and slow conformational exchange are outside the simple count model.\n\nExpected canary chemical-environment counts are benzaldehyde 13C=5 and nonexchangeable 1H=4; toluene 13C=5 and nonexchangeable 1H=4; nitrobenzene 13C=4 and nonexchangeable 1H=3; ethanol 13C=2 and nonexchangeable 1H=2 plus one potentially observable OH; acetic acid 13C=2 and nonexchangeable 1H=1 plus one potentially observable acid OH; ethyl acetate 13C=4 and 1H=3; 1-propanol 13C=3 and nonexchangeable 1H=3 plus one potentially observable OH; 2-propanol 13C=2 and nonexchangeable 1H=2 plus one potentially observable OH; acetone 13C=2 and 1H=1. Nitrobenzene therefore has three proton environments even though the harvest reports two envelopes. Keep environment count separate from optional display-envelope count. Approximate shift overlap may merge rendered envelopes but must not redefine equivalence. Do not use ±3 ppm or ±0.3 ppm prediction uncertainty as a peak-merging threshold.\n\nOutput resonance centers and integrations/degeneracies; multiplet simulation is a separate layer. In particular, C-F splitting, proton multiplet lines, and second-order aromatic patterns do not increase the number of chemical environments. Mark exchangeable signals as condition-dependent and potentially absent. Use broad uncertainty for generic aliphatic bins and additive polysubstituted predictions; do not promise the harvest tolerances for every table entry. Keep IR and MS behavior unchanged."
+}

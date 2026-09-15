@@ -1,0 +1,41 @@
+{
+  "schema": "canonical.molecule.v1",
+  "note": "SMILES from IUPAC/common names, not from 9701 plot coordinates. Astra must sign canaries.",
+  "canary": [
+    {"id": "ethanol", "name": "ethanol", "smiles": "CCO", "formula": "C2H6O", "sdbs_folder": "08-ethanol", "audit": "astra_signed"},
+    {"id": "acetic_acid", "name": "acetic acid", "smiles": "CC(=O)O", "formula": "C2H4O2", "sdbs_folder": "10-acetic-acid", "audit": "astra_signed"},
+    {"id": "ethyl_acetate", "name": "ethyl acetate", "smiles": "CCOC(=O)C", "formula": "C4H8O2", "sdbs_folder": "11-ethyl-acetate", "audit": "astra_signed"},
+    {"id": "benzaldehyde", "name": "benzaldehyde", "smiles": "O=Cc1ccccc1", "formula": "C7H6O", "sdbs_folder": "01-benzaldehyde", "audit": "astra_signed"},
+    {"id": "toluene", "name": "toluene", "smiles": "Cc1ccccc1", "formula": "C7H8", "sdbs_folder": "02-toluene", "audit": "astra_signed"},
+    {"id": "acetone", "name": "propanone", "smiles": "CC(=O)C", "formula": "C3H6O", "sdbs_folder": null, "audit": "astra_signed"},
+    {"id": "aniline", "name": "aniline", "smiles": "Nc1ccccc1", "formula": "C6H7N", "sdbs_folder": "12-aniline", "audit": "astra_signed"},
+    {"id": "phenol", "name": "phenol", "smiles": "Oc1ccccc1", "formula": "C6H6O", "sdbs_folder": null, "audit": "astra_signed"},
+    {"id": "1-bromobutane", "name": "1-bromobutane", "smiles": "CCCCBr", "formula": "C4H9Br", "sdbs_folder": "07-1-bromobutane", "audit": "astra_signed"},
+    {"id": "cyclohexene", "name": "cyclohexene", "smiles": "C1CCC=CC1", "formula": "C6H10", "sdbs_folder": "05-cyclohexene", "audit": "astra_signed"},
+    {"id": "acetyl_chloride", "name": "acetyl chloride", "smiles": "CC(=O)Cl", "formula": "C2H3ClO", "sdbs_folder": null, "audit": "astra_signed"},
+    {"id": "nitrobenzene", "name": "nitrobenzene", "smiles": "O=[N+]([O-])c1ccccc1", "formula": "C6H5NO2", "sdbs_folder": null, "audit": "astra_signed"}
+  ],
+  "exam_9701": [
+    {"id": "ethanol", "smiles": "CCO", "aliases": ["ethanol"]},
+    {"id": "acetic_acid", "smiles": "CC(=O)O", "aliases": ["ethanoic acid", "acetic acid", "CH3CO2H"]},
+    {"id": "ethyl_acetate", "smiles": "CCOC(=O)C", "aliases": ["ethyl ethanoate", "ethylethanoate", "ethyl acetate", "CH3CO2C2H5", "CH3CO2CH2CH3"]},
+    {"id": "methyl_acetate", "smiles": "COC(=O)C", "aliases": ["methyl ethanoate", "CH3CO2CH3", "CH3CO2CH3"]},
+    {"id": "acetone", "smiles": "CC(=O)C", "aliases": ["propanone", "acetone", "CH3COCH3"]},
+    {"id": "propanal", "smiles": "CCC=O", "aliases": ["propanal", "CH3CH2CHO"]},
+    {"id": "propan-1-ol", "smiles": "CCCO", "aliases": ["propan-1-ol", "CH3CH2CH2OH"]},
+    {"id": "propan-2-ol", "smiles": "CC(C)O", "aliases": ["propan-2-ol", "CH3CH(OH)CH3"]},
+    {"id": "propanoic_acid", "smiles": "CCC(=O)O", "aliases": ["propanoic acid", "CH3CH2CO2H"]},
+    {"id": "butan-1-ol", "smiles": "CCCCO", "aliases": ["butan-1-ol"]},
+    {"id": "butan-2-ol", "smiles": "CCC(C)O", "aliases": ["butan-2-ol"]},
+    {"id": "butan-2-one", "smiles": "CCC(=O)C", "aliases": ["butanone", "butan-2-one", "CH3CH2COCH3"]},
+    {"id": "butanoic_acid", "smiles": "CCCC(=O)O", "aliases": ["butanoic acid", "CH3CH2CH2CO2H"]},
+    {"id": "hydroxyacetone", "smiles": "CC(=O)CO", "aliases": ["CH3COCH2OH", "hydroxyacetone"]},
+    {"id": "3-hydroxybutanal", "smiles": "CC(O)CC=O", "aliases": ["3-hydroxybutanal"]},
+    {"id": "but-3-en-1-ol", "smiles": "C=CCCO", "aliases": ["but-3-en-1-ol", "CH2=CHCH2CH2OH"]},
+    {"id": "cyclobutanol", "smiles": "OC1CCC1", "aliases": ["cyclobutanol"]},
+    {"id": "hydroxyacetic_ketone_diol", "smiles": "O=C(CO)CO", "aliases": ["HOCH2COCH2OH"]},
+    {"id": "glyceraldehyde_like", "smiles": "O=CC(O)CO", "aliases": ["HOCH2CH(OH)CHO"]},
+    {"id": "glycerol", "smiles": "OCC(O)CO", "aliases": ["HOCH2CH(OH)CH2OH"]},
+    {"id": "3-hydroxypropanoic", "smiles": "O=C(O)CCO", "aliases": ["HOCH2CH2COOH"]}
+  ]
+}

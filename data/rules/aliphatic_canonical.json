@@ -1,0 +1,1211 @@
+{
+  "model_self_id": "ChatGPT",
+  "requested_generator_id": "gpt-6-astra",
+  "scope": "acyclic non-aromatic",
+  "purpose": "Deterministic, graph-conditioned teaching spectra. Generate reusable band envelopes and chemically justified fingerprint structure, not stored molecular polylines.",
+  "calibration": {
+    "ir": "The supplied traces support qualitative shapes, approximate positions, relative prominence, and selected environment contrasts. They do not establish universal experimental intensities or exact peak positions.",
+    "nmr": "No NMR traces or peak lists were supplied. All 1H/13C shifts and coupling rules below are textbook priors, not measurements extracted from these IR traces.",
+    "default_conditions": "Condensed-phase, hydrogen-bonded IR; room-temperature NMR in an achiral solvent with rapid ordinary bond rotation and rapidly exchanging OH protons.",
+    "output_claim": "Exam-quality schematic prediction, not a reconstructed or guaranteed experimental spectrum.",
+    "units": {
+      "nu0": "cm^-1",
+      "width": "cm^-1",
+      "Tmin": "percent transmittance for an isolated, single-instance template",
+      "ppm": "chemical shift relative to TMS"
+    }
+  },
+  "canonicalization": {
+    "validation": [
+      "Parse and sanitize SMILES with explicit bond orders, formal charges, isotope labels, and supplied stereochemistry.",
+      "Reject any aromatic atom or aromatic bond.",
+      "Reject any molecular cycle, including non-aromatic rings.",
+      "Require one connected molecular component for the default generator; mixtures and salts require an explicit mixture or ionic-species model.",
+      "Do not interpret acyclic non-aromatic as necessarily saturated."
+    ],
+    "motif_precedence": [
+      "Identify complete functional groups before assigning individual bond templates.",
+      "Classify each carbonyl once: carboxylic acid, ester, other acyl derivative, aldehyde, or ketone.",
+      "A neutral carboxylic acid requires C(=O)-O-H. C(=O)-O-C is an ester, not an acid.",
+      "Alcohol OH requires O-H attached to an sp3 carbon. Acid OH must not also produce an alcohol template.",
+      "Primary and secondary alcohol classes use the number of carbon neighbors of the OH-bearing carbon: one and two, respectively.",
+      "Methanol and tertiary alcohols require their own environment handling; neither should be silently forced into a CH2OH or CHOH template.",
+      "Alkyl bromide requires an sp3 C-Br bond. Acyl bromides are not alkyl bromides."
+    ],
+    "invariance": "Use canonical graph descriptors and motif counts, never input atom order, SMILES character positions, molecule names, or a molecule-specific random seed.",
+    "coverage": {
+      "supported": "Alkane skeletons and new saturated, neutral combinations of the seven listed functional-group families.",
+      "conditional": "Strongly interacting adjacent functional groups, unusual steric environments, and intramolecular hydrogen bonding receive wider uncertainty intervals.",
+      "unsupported_policy": "Unrepresented chemistry requires an explicitly versioned textbook-prior extension. Otherwise return the recognized features with status incomplete and list unsupported environments. Never present a partial spectrum as complete.",
+      "examples_requiring_extensions": [
+        "tertiary alcohols",
+        "ethers without an ester group",
+        "alkenes and alkynes",
+        "nitriles",
+        "amines and amides",
+        "carboxylates",
+        "organometallic compounds"
+      ]
+    }
+  },
+  "shape_library": {
+    "primitives": {
+      "G": "G(nu; mu, w) = exp(-4*ln(2)*((nu-mu)/w)^2).",
+      "L": "L(nu; mu, w) = 1/(1+4*((nu-mu)/w)^2).",
+      "P0": "P0 = (1-eta)*G + eta*L; default eta = 0.25.",
+      "compact_support": "For narrow-band primitives, multiply by a smooth window equal to 1 within 3 widths of the center, falling by a cosine taper to 0 at 4 widths. This prevents unphysical long tails.",
+      "normalization": "After constructing and windowing a band or cluster, divide its profile by its maximum. Profiles are nonnegative."
+    },
+    "P": {
+      "description": "Compact pseudo-Voigt peak for resolved stretches, bends, and rocking modes.",
+      "width_definition": "FWHM before remote-tail tapering.",
+      "formula": "Windowed P0."
+    },
+    "G": {
+      "description": "Smooth broader Gaussian feature for unresolved deformation envelopes.",
+      "width_definition": "FWHM before remote-tail tapering.",
+      "formula": "Windowed G."
+    },
+    "S": {
+      "description": "Sharp, deep carbonyl core with a restrained broader skirt.",
+      "width_definition": "FWHM parameter of the narrow core, not the total composite.",
+      "formula": "Normalize 0.85*P0(nu; nu0, width) + 0.15*G(nu; nu0, 3*width), with compact support applied to each component.",
+      "note": "The skirt is not a second carbonyl and must not become a broad, deep feature near 1900 cm^-1."
+    },
+    "A": {
+      "description": "Smooth asymmetric hydrogen-bonded alcohol OH envelope.",
+      "width_definition": "Nominal FWHM; low_scale + high_scale = 2 before support tapering.",
+      "formula": "Use exp(-4*ln(2)*((nu-nu0)/(width*s))^2), with s=low_scale below nu0 and s=high_scale above nu0.",
+      "defaults": {
+        "low_scale": 1.2,
+        "high_scale": 0.8,
+        "support_cm1": [
+          2950,
+          3700
+        ],
+        "full_window_cm1": [
+          3100,
+          3580
+        ]
+      },
+      "window": "Use smooth cosine transitions between the support edges and full-window edges.",
+      "note": "One continuous envelope, not a comb of narrow OH peaks. The upper onset may extend slightly above 3600, but it is smooth."
+    },
+    "C": {
+      "description": "Carboxylic-acid OH canyon: very broad, asymmetric, and shouldered, with alkyl CH peaks superimposed separately.",
+      "width_definition": "Overall envelope scale, not a single-peak FWHM.",
+      "formula": "Normalize 0.65*G(nu; nu0+110, 0.75*width) + 0.65*G(nu; nu0-220, 0.70*width) + 0.18*G(nu; nu0-450, 0.225*width).",
+      "support_cm1": [
+        2400,
+        3630
+      ],
+      "full_window_cm1": [
+        2530,
+        3420
+      ],
+      "window": "Smooth cosine transitions at both ends.",
+      "note": "The overlapping broad components describe a canyon, not three assigned OH fundamentals. Weak acid-specific shoulders are allowed; random ripples are not."
+    },
+    "M": {
+      "description": "Small coupled-mode cluster with graph-conditioned component positions and weights.",
+      "width_definition": "Reference FWHM for each component.",
+      "formula": "Normalize the sum over components of weight_i*P(nu; nu0+offset_i, width*width_factor_i).",
+      "note": "Two or three meaningful components are preferred to a dense comb. Components describe a reusable motif, not copied local minima."
+    }
+  },
+  "rendering": {
+    "grid_cm1": {
+      "start": 4000,
+      "stop": 400,
+      "step": -2
+    },
+    "baseline_T": 98,
+    "formula": [
+      "For each active band j, a_j = -log10(Tmin_j/98).",
+      "Construct its normalized nonnegative shape phi_j(nu).",
+      "Combine identical environment templates using count scaling rather than cloning an entire spectrum.",
+      "A(nu) = sum_j count_scale(n_j)*a_j*phi_j(nu).",
+      "T(nu) = max(1, 98*10^(-A(nu)))."
+    ],
+    "count_scale": "For n>=1, min(1.8, 1+0.25*ln(n)); emit nothing for n=0. This is a bounded teaching-spectrum prominence rule, not a Beer-Lambert concentration calibration.",
+    "overlap": "Add absorbance, not transmittance dips. Actual rendered minima may be lower than isolated-band Tmin values.",
+    "baseline_policy": "Flat high-transmittance baseline outside assigned envelopes; no synthetic baseline waviness or random noise.",
+    "high_frequency_policy": "Above about 3600 cm^-1, permit only the smooth upper onset of an applicable OH envelope. No unrelated isolated peaks or jagged structure.",
+    "plot_policy": "Plot wavenumber decreasing from left to right. Use non-overshooting interpolation if a coarser exported curve is needed.",
+    "output_metadata": [
+      "canonical molecular identifier",
+      "functional groups and atom mappings",
+      "active bands and environment adjustments",
+      "qualitative position uncertainty",
+      "trace-supported versus textbook-prior provenance",
+      "unsupported environments",
+      "IR curve generated from the active parameters"
+    ]
+  },
+  "shared_ir_rules": [
+    {
+      "id": "CH3_asymmetric_stretch",
+      "when": "At least one saturated carbon bearing three H",
+      "shape": "P",
+      "nu0": 2965,
+      "width": 18,
+      "Tmin": 48,
+      "note": "Count methyl environments; do not add one peak per C-H bond."
+    },
+    {
+      "id": "CH2_asymmetric_stretch",
+      "when": "At least one saturated carbon bearing two H",
+      "shape": "P",
+      "nu0": 2930,
+      "width": 20,
+      "Tmin": 48
+    },
+    {
+      "id": "CH3_symmetric_stretch",
+      "when": "At least one saturated CH3",
+      "shape": "P",
+      "nu0": 2875,
+      "width": 20,
+      "Tmin": 65
+    },
+    {
+      "id": "CH2_symmetric_stretch",
+      "when": "At least one saturated CH2",
+      "shape": "P",
+      "nu0": 2855,
+      "width": 20,
+      "Tmin": 65
+    },
+    {
+      "id": "methine_CH_stretch",
+      "when": "At least one saturated CH",
+      "shape": "P",
+      "nu0": 2890,
+      "width": 22,
+      "Tmin": 78
+    },
+    {
+      "id": "CH3_asymmetric_deformation",
+      "when": "At least one saturated CH3",
+      "shape": "P",
+      "nu0": 1450,
+      "width": 28,
+      "Tmin": 66
+    },
+    {
+      "id": "CH2_scissor",
+      "when": "At least one saturated CH2",
+      "shape": "P",
+      "nu0": 1465,
+      "width": 26,
+      "Tmin": 62
+    },
+    {
+      "id": "CH3_symmetric_deformation",
+      "when": "At least one saturated CH3",
+      "shape": "P",
+      "nu0": 1380,
+      "width": 22,
+      "Tmin": 65,
+      "note": "For an acyl CH3 use approximately 1370 and Tmin 40. For an isopropyl motif, replace its contribution with the branched-methyl pair."
+    },
+    {
+      "id": "branched_methyl_pair",
+      "when": "A carbon bearing H is attached to two CH3 groups",
+      "shape": "M",
+      "nu0": 1375,
+      "width": 14,
+      "Tmin": 38,
+      "components": [
+        {
+          "offset": -10,
+          "weight": 1,
+          "width_factor": 1
+        },
+        {
+          "offset": 10,
+          "weight": 0.8,
+          "width_factor": 1
+        }
+      ],
+      "note": "A characteristic coupled methyl-deformation pattern; do not duplicate the same methyl groups in the ordinary symmetric-deformation band."
+    },
+    {
+      "id": "CH2_wag_twist",
+      "when": "A CH2 participates in a C-C-C path or is directly attached to O, Br, or a carbonyl carbon",
+      "shape": "M",
+      "nu0": 1290,
+      "width": 30,
+      "Tmin": 82,
+      "components": [
+        {
+          "offset": -35,
+          "weight": 0.6,
+          "width_factor": 1
+        },
+        {
+          "offset": 30,
+          "weight": 1,
+          "width_factor": 1.2
+        }
+      ],
+      "note": "Weak, approximate fingerprint support. A more specific overlapping motif replaces this contribution rather than being duplicated."
+    },
+    {
+      "id": "alkyl_skeletal_stretch",
+      "when": "At least one saturated C-C-C path",
+      "shape": "G",
+      "nu0": 1080,
+      "width": 55,
+      "Tmin": 89,
+      "note": "Low-confidence skeletal support. Suppress if already represented by an overlapping C-O or specific skeletal cluster."
+    },
+    {
+      "id": "terminal_alkyl_rock",
+      "when": "A CH3-C-C path exists",
+      "shape": "P",
+      "nu0": 970,
+      "width": 30,
+      "Tmin": 87,
+      "note": "Weak representative fingerprint feature, not a universal exact 970 cm^-1 diagnostic."
+    },
+    {
+      "id": "methylene_sequence_rock",
+      "when": "At least three consecutive CH2 carbons",
+      "shape": "P",
+      "nu0": 730,
+      "width": 28,
+      "Tmin": 76,
+      "note": "Typical range roughly 720-750; chain conformation can alter visibility."
+    },
+    {
+      "id": "CCC_deformation_envelope",
+      "when": "At least one saturated C-C-C path",
+      "shape": "G",
+      "nu0": 680,
+      "width": 100,
+      "Tmin": 90,
+      "note": "Restrained broad skeletal structure, not a molecular identification claim."
+    }
+  ],
+  "ir_families": {
+    "primary_alcohol": {
+      "bands": [
+        {
+          "id": "OH",
+          "shape": "A",
+          "nu0": 3380,
+          "width": 400,
+          "Tmin": 12,
+          "note": "Broad hydrogen-bonded OH. The ethanol/propan-1-ol difference does not justify a fixed OH frequency increment per added carbon."
+        },
+        {
+          "id": "primary_CO_cluster",
+          "shape": "M",
+          "nu0": 1055,
+          "width": 24,
+          "Tmin": 14,
+          "components": [
+            {
+              "offset": -20,
+              "weight": 1,
+              "width_factor": 0.9
+            },
+            {
+              "offset": 20,
+              "weight": 0.75,
+              "width_factor": 1
+            }
+          ],
+          "note": "Reusable split C-O/coupled skeletal cluster near 1030-1090, rather than one generic alcohol Gaussian."
+        },
+        {
+          "id": "COH_deformation",
+          "shape": "G",
+          "nu0": 1330,
+          "width": 55,
+          "Tmin": 73,
+          "note": "Moderate, unresolved fingerprint contribution."
+        },
+        {
+          "id": "extended_primary_CCO_coupling",
+          "shape": "P",
+          "nu0": 1120,
+          "width": 30,
+          "Tmin": 65,
+          "when": "The CH2OH group terminates a carbon chain containing at least three carbons",
+          "note": "A motif-level extension suggested by propan-1-ol; not a copied propan-1-ol fingerprint."
+        }
+      ],
+      "fpr": "Combine the split C-O cluster, applicable CH2/CH3 bends near 1465/1450/1380, and a small number of activated skeletal modes. Do not transfer the ethanol 895 cm^-1 notch or propan-1-ol low-frequency spikes to every primary alcohol."
+    },
+    "secondary_alcohol": {
+      "bands": [
+        {
+          "id": "OH",
+          "shape": "A",
+          "nu0": 3350,
+          "width": 410,
+          "Tmin": 12,
+          "note": "Same broad OH shape family as primary alcohols; the robust distinction is primarily in the C-O region and carbon skeleton."
+        },
+        {
+          "id": "secondary_CO_cluster",
+          "shape": "M",
+          "nu0": 1130,
+          "width": 26,
+          "Tmin": 14,
+          "components": [
+            {
+              "offset": -25,
+              "weight": 0.55,
+              "width_factor": 1
+            },
+            {
+              "offset": 0,
+              "weight": 1,
+              "width_factor": 1
+            },
+            {
+              "offset": 35,
+              "weight": 0.55,
+              "width_factor": 1.1
+            }
+          ],
+          "note": "Higher-frequency C-O/coupled-mode cluster than the primary-alcohol template; typical useful envelope is about 1090-1170."
+        },
+        {
+          "id": "secondary_CCO_skeletal",
+          "shape": "P",
+          "nu0": 965,
+          "width": 30,
+          "Tmin": 58,
+          "note": "Moderate coupled skeletal support. The very deep 954 cm^-1 feature in 2-propanol is not a universal secondary-alcohol requirement."
+        }
+      ],
+      "fpr": "Use the shifted C-O cluster and graph-selected bends. Activate the 1365/1385 branched-methyl pair only when the actual substitution pattern warrants it."
+    },
+    "carboxylic_acid": {
+      "bands": [
+        {
+          "id": "acid_OH_canyon",
+          "shape": "C",
+          "nu0": 3050,
+          "width": 800,
+          "Tmin": 16,
+          "note": "Broad approximately 2500-3500 OH absorption under the ordinary CH stretches. Default assumes associated neutral acid."
+        },
+        {
+          "id": "acid_CeqO",
+          "shape": "S",
+          "nu0": 1712,
+          "width": 28,
+          "Tmin": 5,
+          "note": "Strong narrow carbonyl core within a modest skirt; ordinary saturated-acid expectation approximately 1700-1725."
+        },
+        {
+          "id": "acid_CO_cluster",
+          "shape": "M",
+          "nu0": 1290,
+          "width": 30,
+          "Tmin": 24,
+          "components": [
+            {
+              "offset": -75,
+              "weight": 0.45,
+              "width_factor": 1.1
+            },
+            {
+              "offset": 0,
+              "weight": 1,
+              "width_factor": 1.1
+            },
+            {
+              "offset": 25,
+              "weight": 0.3,
+              "width_factor": 1
+            }
+          ],
+          "note": "C-O/OH-coupled fingerprint region; component weights and center are adjusted by the alpha-carbon environment."
+        },
+        {
+          "id": "acid_OH_in_plane",
+          "shape": "G",
+          "nu0": 1410,
+          "width": 40,
+          "Tmin": 48,
+          "note": "Overlaps ordinary alkyl deformations."
+        },
+        {
+          "id": "acid_dimer_OH_oop",
+          "shape": "G",
+          "nu0": 932,
+          "width": 65,
+          "Tmin": 55,
+          "note": "Associated-acid OH out-of-plane envelope around 900-950. This is not aromatic out-of-plane absorption."
+        }
+      ],
+      "fpr": "Require the carbonyl spike, acid OH canyon, structured C-O region, and associated-acid approximately 930 envelope. Distinguish acetic and propanoic acids using alpha-CH3 versus alpha-CH2 and the resulting alkyl/coupled-mode pattern."
+    },
+    "ketone": {
+      "bands": [
+        {
+          "id": "ketone_CeqO",
+          "shape": "S",
+          "nu0": 1715,
+          "width": 26,
+          "Tmin": 5,
+          "note": "Saturated acyclic ketone default; approximate range 1705-1725."
+        },
+        {
+          "id": "acyl_methyl_CC_stretch",
+          "shape": "P",
+          "nu0": 1220,
+          "width": 30,
+          "Tmin": 48,
+          "when": "A CH3 is directly bonded to the ketone carbonyl carbon",
+          "note": "Acetone supports a prominent acyl-skeletal fingerprint feature here. Do not label it C-O single-bond stretching."
+        },
+        {
+          "id": "ketone_skeletal_deformation",
+          "shape": "G",
+          "nu0": 590,
+          "width": 100,
+          "Tmin": 86,
+          "note": "Weak low-frequency skeleton envelope, not a copied 531 cm^-1 line."
+        }
+      ],
+      "fpr": "Strong carbonyl, acyl-alkyl bending structure, and restrained skeleton bands. No OH envelope and no aldehyde Fermi pair."
+    },
+    "aldehyde": {
+      "bands": [
+        {
+          "id": "aldehyde_CeqO",
+          "shape": "S",
+          "nu0": 1730,
+          "width": 28,
+          "Tmin": 8,
+          "note": "Textbook-corrected saturated-aldehyde default, approximately 1720-1740. Do not establish 1710 as universal from the supplied trace."
+        },
+        {
+          "id": "aldehyde_CH_Fermi_low",
+          "shape": "P",
+          "nu0": 2720,
+          "width": 18,
+          "Tmin": 78,
+          "note": "Textbook prior; not convincingly resolved in the supplied propionaldehyde trace. Can be weak or absent experimentally."
+        },
+        {
+          "id": "aldehyde_CH_Fermi_high",
+          "shape": "P",
+          "nu0": 2820,
+          "width": 20,
+          "Tmin": 73,
+          "note": "May overlap the low-frequency edge of ordinary CH stretching."
+        },
+        {
+          "id": "CHO_deformation",
+          "shape": "P",
+          "nu0": 1390,
+          "width": 30,
+          "Tmin": 77
+        },
+        {
+          "id": "aldehyde_skeletal",
+          "shape": "P",
+          "nu0": 1100,
+          "width": 30,
+          "Tmin": 83,
+          "when": "An alkyl substituent is attached to CHO",
+          "note": "Weak representative fingerprint support; exact position is low confidence."
+        }
+      ],
+      "fpr": "Carbonyl plus weak aldehydic CH features and graph-derived alkyl bends. Do not reproduce the anomalous approximately 3130 or 1580 features as universal saturated-aldehyde diagnostics."
+    },
+    "ester": {
+      "bands": [
+        {
+          "id": "ester_CeqO",
+          "shape": "S",
+          "nu0": 1740,
+          "width": 28,
+          "Tmin": 5,
+          "note": "Saturated acyclic ester default; approximate range 1730-1750."
+        },
+        {
+          "id": "ester_acyl_CO_cluster",
+          "shape": "M",
+          "nu0": 1240,
+          "width": 28,
+          "Tmin": 10,
+          "components": [
+            {
+              "offset": -35,
+              "weight": 0.4,
+              "width_factor": 1.1
+            },
+            {
+              "offset": 0,
+              "weight": 1,
+              "width_factor": 1
+            },
+            {
+              "offset": 35,
+              "weight": 0.25,
+              "width_factor": 1
+            }
+          ],
+          "note": "Strong coupled C-O region, with environment uncertainty across approximately 1180-1300."
+        },
+        {
+          "id": "ester_alkoxy_CO_cluster",
+          "shape": "M",
+          "nu0": 1070,
+          "width": 26,
+          "Tmin": 22,
+          "components": [
+            {
+              "offset": -25,
+              "weight": 1,
+              "width_factor": 1
+            },
+            {
+              "offset": 40,
+              "weight": 0.6,
+              "width_factor": 1.1
+            }
+          ],
+          "note": "Lower-frequency coupled C-O structure. Alkoxy substitution may change positions and relative intensities; one ethyl ester does not calibrate all esters."
+        },
+        {
+          "id": "alkoxy_CC_rock",
+          "shape": "P",
+          "nu0": 950,
+          "width": 30,
+          "Tmin": 70,
+          "when": "The ester alkoxy side contains an O-CH2-C path",
+          "note": "Moderate support only; do not force ethyl acetate's deep 939/917 doublet onto every ester."
+        }
+      ],
+      "fpr": "Strong carbonyl plus at least two differentiated C-O-region contributions and applicable alkyl bends. An ester oxygen does not create OH."
+    },
+    "alkyl_bromide": {
+      "bands": [
+        {
+          "id": "CBr",
+          "shape": "P",
+          "nu0": 560,
+          "width": 32,
+          "Tmin": 47,
+          "note": "Representative C-Br band; substantial environment uncertainty across roughly 500-650. The supplied primary bromide does not establish a universal substitution-dependent frequency law."
+        },
+        {
+          "id": "CH2Br_wag",
+          "shape": "P",
+          "nu0": 1260,
+          "width": 28,
+          "Tmin": 66,
+          "when": "An sp3 CH2-Br group is present",
+          "note": "Coupled deformation; replaces the overlapping generic wag contribution for this environment."
+        }
+      ],
+      "fpr": "Alkyl stretching and bending pattern, CH2Br deformation when applicable, chain-dependent rocking, and low-frequency C-Br absorption. Do not duplicate the entire bromobutane fingerprint for other bromoalkanes."
+    }
+  },
+  "environment_rules": [
+    "For acids define alpha as the carbon directly bonded to the carboxyl carbon. In acetic acid it is CH3; in propanoic acid it is CH2. Do not classify these by total molecular carbon count alone.",
+    "For an acid with alpha-CH3, retain the 1290-centered C-O cluster and use the stronger acyl-CH3 deformation near 1370. There is no alpha-CH2 scissor or wag.",
+    "For an acid with alpha-CH2, use an illustrative acid C-O cluster centered at 1250 with components at offsets -70, 0, and +40, weights 0.5, 1, and 0.45, and reference width 34. Activate CH2 scissoring/wagging and retain any terminal-CH3 bends elsewhere in the molecule.",
+    "The acid alpha-CH2 versus alpha-CH3 C-O adjustment is a low-confidence motif-level generalization from these two traces, not a universal 40 cm^-1 law. Do not impose a comparably large carbonyl shift.",
+    "For primary alcohols, a CH2 rather than CH3 at the beta carbon favors the upper portion of the primary C-O cluster. A canonical option is nu0 1060 with offsets -15 and +15 and weights 0.7 and 1. Keep the shift small and uncertainty explicit.",
+    "Secondary alcohols use the approximately 1100-1165 C-O cluster even when the molecule has the same formula as a primary alcohol. Their complete fingerprints still depend on their actual carbon skeletons.",
+    "Generate one shared alcohol OH envelope for a polyol, not one separated broad trough per OH. For two or more alcohol OH groups use a canonical nu0 of 3340 and width min(520, 420+30*(nOH-1)), with bounded count scaling.",
+    "For polyols retain the applicable primary and secondary C-O motifs, combining overlapping contributions in absorbance. Glycerol therefore has both primary and secondary C-O character, but no carbonyl.",
+    "Do not infer that more OH groups necessarily shifts the OH maximum upward. The unusual high-frequency glycerol plateau is not a universal polyol rule.",
+    "For hydroxy acids combine the acid canyon and alcohol contribution without inventing multiple resolved OH maxima. Keep the acid carbonyl and acid out-of-plane band.",
+    "The common 1450/1465 and 1380 region is populated only by present CH classes. Methine-only or methyl-free structures must not receive a fictitious methyl bend.",
+    "Acyl-CH3 deformation intensity can be enhanced in ketones, esters, and acids. An alkoxy methyl in an ester is not an acyl methyl.",
+    "An alkyl bromide receives no OH, carbonyl, or C-O diagnostic solely because bromobutane has fingerprint bands in those regions.",
+    "Only actual repeated motifs increase template prominence. Chain length may add eligible CH2 and skeletal motifs, but must not trigger uniform spectral roughness.",
+    "Conjugation with an alkene commonly lowers carbonyl frequency, but it requires an explicit unsaturated-environment extension. Do not apply an isolated saturated-carbonyl prediction to an unrecognized conjugated system.",
+    "Carbonyls adjacent to additional heteroatoms, multiple carbonyls, or unusual substituents require a composite rule or wider uncertainty, not unlimited additive frequency increments."
+  ],
+  "nmr_equivalence_and_rendering": {
+    "equivalence": [
+      "Build environments from the molecular graph, not from SMILES substrings or shift-bin names.",
+      "For 13C, determine carbon equivalence under molecular symmetry with the supplied stereochemistry and the declared rapid-motion assumptions.",
+      "For 1H, include attached hydrogens, methyl rotational averaging, symmetry, and stereotopicity analysis. Use a substitution test where necessary to distinguish homotopic, enantiotopic, and diastereotopic hydrogens.",
+      "Homotopic and, in the default achiral medium, enantiotopic sites share a chemical shift. Diastereotopic CH2 hydrogens can require separate resonances and geminal coupling.",
+      "Identical shift-bin assignments do not prove equivalence. Keep distinct environment IDs even when their representative ppm values coincide.",
+      "Unspecified relative stereochemistry may make the number or position of resonances ambiguous. Report that ambiguity instead of choosing a hidden stereoisomer."
+    ],
+    "integration": "1H integration equals the number of hydrogens in the chemical-equivalence class. OH/COOH integrations are nominal because exchange can affect experimental integrals.",
+    "multiplicity": [
+      "Use n+1 only for an approximately first-order signal coupled to one set of n equivalent spin-1/2 neighbors with a common J.",
+      "For distinct neighbor sets, use the product of their individual splittings and report labels such as triplet of quartets rather than automatically summing all neighbors.",
+      "Equivalent protons do not split one another in the elementary first-order treatment.",
+      "Equal or unresolved J values may collapse a product pattern to an apparent simpler multiplet; label this as apparent.",
+      "Use a default alkyl vicinal J prior of about 7 Hz only for a schematic rendering, with a typical 5-9 Hz uncertainty interval.",
+      "Aldehyde-to-alpha-proton coupling is often small, approximately 1-3 Hz; do not omit it merely because CHO has its own shift bin.",
+      "Rapidly exchanging OH and COOH are broad singlets by default and do not split adjacent CH signals.",
+      "Diastereotopic CH2 systems, magnetic nonequivalence, or small frequency separation relative to J require a complex/multiplet label or spin-system calculation, not a forced n+1 answer."
+    ],
+    "carbon_spectrum": "Default 13C output is broadband 1H-decoupled: one singlet per distinct carbon environment. Carbon counts are annotations, not quantitative peak heights.",
+    "shift_selection": "Apply the most specific complete environment bin before generic CH3, CH2, or CH bins. Use explicit composite bins for competing strong effects.",
+    "precision": "Representative shifts are deliberately coarse. Return ppm_range and confidence; do not imply measured precision by displaying many decimal places."
+  },
+  "hnmr_bins": [
+    {
+      "class": "CH3-C",
+      "ppm": 0.9,
+      "ppm_range": [
+        0.7,
+        1.3
+      ],
+      "mult": "from neighboring nonequivalent proton sets; n+1 only when applicable"
+    },
+    {
+      "class": "CH2-C",
+      "ppm": 1.4,
+      "ppm_range": [
+        1.1,
+        1.8
+      ],
+      "mult": "from coupling graph; CH2 hydrogens may need separate treatment"
+    },
+    {
+      "class": "CH-C",
+      "ppm": 1.7,
+      "ppm_range": [
+        1.2,
+        2.2
+      ],
+      "mult": "from coupling graph"
+    },
+    {
+      "class": "CH3-C=O_ketone",
+      "ppm": 2.1,
+      "ppm_range": [
+        1.9,
+        2.4
+      ],
+      "mult": "usually singlet when no resolved long-range coupling exists"
+    },
+    {
+      "class": "CH3-C=O_acid_or_ester",
+      "ppm": 2.1,
+      "ppm_range": [
+        1.9,
+        2.3
+      ],
+      "mult": "usually singlet when the methyl is directly bonded to the carbonyl carbon"
+    },
+    {
+      "class": "CH2-C=O",
+      "ppm": 2.4,
+      "ppm_range": [
+        2.1,
+        2.8
+      ],
+      "mult": "from adjacent proton sets; include small aldehyde coupling when present"
+    },
+    {
+      "class": "CH-C=O",
+      "ppm": 2.6,
+      "ppm_range": [
+        2.2,
+        3.1
+      ],
+      "mult": "from coupling graph"
+    },
+    {
+      "class": "CH3-O_alcohol_or_ether",
+      "ppm": 3.3,
+      "ppm_range": [
+        3.1,
+        3.6
+      ],
+      "mult": "usually singlet under rapid OH exchange; no routine splitting through oxygen"
+    },
+    {
+      "class": "CH2-OH",
+      "ppm": 3.6,
+      "ppm_range": [
+        3.3,
+        3.9
+      ],
+      "mult": "from carbon-attached neighbors, excluding rapidly exchanging OH"
+    },
+    {
+      "class": "CH-OH",
+      "ppm": 3.9,
+      "ppm_range": [
+        3.5,
+        4.3
+      ],
+      "mult": "from carbon-attached neighbors"
+    },
+    {
+      "class": "CH3-O-C=O",
+      "ppm": 3.7,
+      "ppm_range": [
+        3.5,
+        3.9
+      ],
+      "mult": "usually singlet"
+    },
+    {
+      "class": "CH2-O-C=O",
+      "ppm": 4.1,
+      "ppm_range": [
+        3.8,
+        4.5
+      ],
+      "mult": "from carbon-attached neighbors"
+    },
+    {
+      "class": "CH-O-C=O",
+      "ppm": 5.0,
+      "ppm_range": [
+        4.5,
+        5.5
+      ],
+      "mult": "from coupling graph"
+    },
+    {
+      "class": "CH_or_CH2-O_and_alpha_to_C=O",
+      "ppm": 4.2,
+      "ppm_range": [
+        3.7,
+        4.8
+      ],
+      "mult": "from coupling graph; composite environment",
+      "note": "Use instead of adding an unrestricted alcohol shift to an unrestricted carbonyl shift."
+    },
+    {
+      "class": "CH3-Br",
+      "ppm": 2.7,
+      "ppm_range": [
+        2.5,
+        3.1
+      ],
+      "mult": "singlet for bromomethane"
+    },
+    {
+      "class": "CH2-Br",
+      "ppm": 3.4,
+      "ppm_range": [
+        3.2,
+        3.7
+      ],
+      "mult": "from adjacent proton sets"
+    },
+    {
+      "class": "CH-Br",
+      "ppm": 4.1,
+      "ppm_range": [
+        3.7,
+        4.6
+      ],
+      "mult": "from coupling graph"
+    },
+    {
+      "class": "CHO",
+      "ppm": 9.7,
+      "ppm_range": [
+        9.2,
+        10.2
+      ],
+      "mult": "small coupling to alpha protons; singlet only if unresolved or absent"
+    },
+    {
+      "class": "OH_alcohol",
+      "ppm": 2.5,
+      "ppm_range": [
+        1.0,
+        5.5
+      ],
+      "mult": "broad singlet by default",
+      "note": "Strongly solvent-, concentration-, temperature-, and exchange-dependent."
+    },
+    {
+      "class": "COOH",
+      "ppm": 11.5,
+      "ppm_range": [
+        10.0,
+        13.0
+      ],
+      "mult": "broad singlet"
+    }
+  ],
+  "cnmr_bins": [
+    {
+      "class": "CH3-C",
+      "ppm": 14,
+      "ppm_range": [
+        8,
+        25
+      ]
+    },
+    {
+      "class": "CH3-attached_to_methine",
+      "ppm": 22,
+      "ppm_range": [
+        15,
+        30
+      ]
+    },
+    {
+      "class": "CH2-C",
+      "ppm": 28,
+      "ppm_range": [
+        18,
+        45
+      ]
+    },
+    {
+      "class": "CH-C",
+      "ppm": 35,
+      "ppm_range": [
+        25,
+        55
+      ]
+    },
+    {
+      "class": "quaternary_sp3_C",
+      "ppm": 40,
+      "ppm_range": [
+        30,
+        60
+      ]
+    },
+    {
+      "class": "CH3-C=O_ketone",
+      "ppm": 30,
+      "ppm_range": [
+        24,
+        35
+      ]
+    },
+    {
+      "class": "CH2-C=O_ketone",
+      "ppm": 40,
+      "ppm_range": [
+        32,
+        50
+      ]
+    },
+    {
+      "class": "CH-C=O_ketone",
+      "ppm": 47,
+      "ppm_range": [
+        35,
+        60
+      ]
+    },
+    {
+      "class": "CH3-C=O_acid_or_ester",
+      "ppm": 21,
+      "ppm_range": [
+        18,
+        25
+      ]
+    },
+    {
+      "class": "CH2-C=O_acid_or_ester",
+      "ppm": 34,
+      "ppm_range": [
+        25,
+        45
+      ]
+    },
+    {
+      "class": "CH-C=O_acid_or_ester",
+      "ppm": 42,
+      "ppm_range": [
+        30,
+        55
+      ]
+    },
+    {
+      "class": "CH2-C=O_aldehyde",
+      "ppm": 44,
+      "ppm_range": [
+        35,
+        55
+      ]
+    },
+    {
+      "class": "C-O_methanol",
+      "ppm": 49,
+      "ppm_range": [
+        47,
+        52
+      ]
+    },
+    {
+      "class": "C-O_CH3_ether",
+      "ppm": 55,
+      "ppm_range": [
+        50,
+        60
+      ]
+    },
+    {
+      "class": "C-O_CH3_ester",
+      "ppm": 52,
+      "ppm_range": [
+        50,
+        55
+      ]
+    },
+    {
+      "class": "C-O_CH2_primary_alcohol",
+      "ppm": 60,
+      "ppm_range": [
+        50,
+        68
+      ]
+    },
+    {
+      "class": "C-O_CH_secondary_alcohol",
+      "ppm": 68,
+      "ppm_range": [
+        60,
+        80
+      ]
+    },
+    {
+      "class": "C-O_quaternary_tertiary_alcohol",
+      "ppm": 73,
+      "ppm_range": [
+        65,
+        85
+      ]
+    },
+    {
+      "class": "C-O_CH2_ester",
+      "ppm": 62,
+      "ppm_range": [
+        55,
+        70
+      ]
+    },
+    {
+      "class": "C-O_CH_ester",
+      "ppm": 72,
+      "ppm_range": [
+        65,
+        85
+      ]
+    },
+    {
+      "class": "C-O_and_alpha_to_C=O",
+      "ppm": 67,
+      "ppm_range": [
+        55,
+        85
+      ]
+    },
+    {
+      "class": "C-Br_CH3",
+      "ppm": 10,
+      "ppm_range": [
+        5,
+        20
+      ]
+    },
+    {
+      "class": "C-Br_CH2",
+      "ppm": 33,
+      "ppm_range": [
+        25,
+        40
+      ]
+    },
+    {
+      "class": "C-Br_CH",
+      "ppm": 52,
+      "ppm_range": [
+        40,
+        65
+      ]
+    },
+    {
+      "class": "C-Br_quaternary",
+      "ppm": 65,
+      "ppm_range": [
+        50,
+        85
+      ]
+    },
+    {
+      "class": "C=O_acid",
+      "ppm": 178,
+      "ppm_range": [
+        170,
+        185
+      ]
+    },
+    {
+      "class": "C=O_ester",
+      "ppm": 171,
+      "ppm_range": [
+        165,
+        175
+      ]
+    },
+    {
+      "class": "C=O_ketone",
+      "ppm": 210,
+      "ppm_range": [
+        205,
+        220
+      ]
+    },
+    {
+      "class": "C=O_aldehyde",
+      "ppm": 200,
+      "ppm_range": [
+        190,
+        205
+      ]
+    }
+  ],
+  "nmr_environment_rules": [
+    "A methyl directly attached to C=O is an acyl methyl; a methyl separated from C=O by CH2 is not.",
+    "An ester alkoxy O-CH2 is more downfield in 1H than a typical alcohol CH2OH. Neither is an alpha-carbonyl CH2 unless it also has a direct bond to the carbonyl carbon.",
+    "For simple vicinal polyols, a small additional 13C deshielding of approximately 3-5 ppm may be used relative to isolated alcohol defaults, with enlarged uncertainty rather than claimed precision.",
+    "For atoms beta to O, Br, or C=O, permit a modest class-specific adjustment or wider range. Do not reclassify them as directly attached atoms.",
+    "Do not show resolved proton splitting by Br in ordinary teaching 1H spectra; bromine quadrupolar relaxation normally prevents a simple useful H-Br splitting pattern.",
+    "An NMR bin listed for an unsupported IR class does not imply that a complete IR template for that class has been calibrated."
+  ],
+  "validation_examples": [
+    {
+      "smiles": "CCO",
+      "checks": [
+        "Primary OH and split primary C-O cluster; no carbonyl.",
+        "1H: 3H triplet, 2H quartet, nominal 1H broad OH singlet.",
+        "13C: two environments."
+      ]
+    },
+    {
+      "smiles": "CCCO",
+      "checks": [
+        "Smooth OH onset, not random structure above 3500.",
+        "Primary C-O cluster plus additional eligible chain/coupled modes.",
+        "The central CH2 is coupled to distinct CH3 and CH2 sets; an apparent sextet is possible only when the relevant couplings are similar.",
+        "13C: three environments."
+      ]
+    },
+    {
+      "smiles": "CC(C)O",
+      "checks": [
+        "Secondary C-O cluster and isopropyl methyl-bend pair.",
+        "1H: equivalent methyls give a 6H doublet; CH gives a 1H septet; OH is broad by default.",
+        "13C: two environments, not three."
+      ]
+    },
+    {
+      "smiles": "CC(=O)O",
+      "checks": [
+        "Acid canyon, narrow carbonyl core, C-O structure, and approximately 930 acid out-of-plane envelope.",
+        "1H: 3H acyl-methyl singlet and broad acid proton.",
+        "13C: two environments."
+      ]
+    },
+    {
+      "smiles": "CCC(=O)O",
+      "checks": [
+        "Retain acid diagnostics while replacing alpha-methyl behavior with alpha-CH2 behavior.",
+        "1H: terminal 3H triplet, alpha 2H quartet, broad acid proton.",
+        "13C: three environments."
+      ]
+    },
+    {
+      "smiles": "CC(C)=O",
+      "checks": [
+        "Ketone carbonyl, enhanced acyl-methyl bend, no intrinsic OH.",
+        "1H: one 6H singlet.",
+        "13C: two environments."
+      ]
+    },
+    {
+      "smiles": "CCC=O",
+      "checks": [
+        "Aldehyde carbonyl and explicitly prior-based weak aldehydic CH pair.",
+        "1H: CHO may be a small-J triplet; alpha CH2 may be a quartet of doublets; terminal CH3 is a triplet.",
+        "13C: three environments."
+      ]
+    },
+    {
+      "smiles": "OCC(O)CO",
+      "checks": [
+        "One broad polyol OH envelope with combined primary and secondary C-O structure.",
+        "13C: equivalent terminal carbons plus central carbon give two environments.",
+        "Do not assume all four terminal CH2 hydrogens constitute one uncomplicated first-order resonance without stereotopicity and coupling analysis."
+      ]
+    },
+    {
+      "smiles": "CCOC(C)=O",
+      "checks": [
+        "Ester carbonyl and differentiated C-O clusters; no intrinsic OH.",
+        "1H: acyl CH3 singlet, OCH2 quartet, terminal CH3 triplet.",
+        "13C: four environments."
+      ]
+    },
+    {
+      "smiles": "CCCCBr",
+      "checks": [
+        "Alkyl pattern, CH2Br deformation, eligible chain rock, and C-Br band; no OH or carbonyl.",
+        "13C: four environments, with C-Br assigned separately from ordinary alkyl CH2."
+      ]
+    },
+    {
+      "smiles": "COC(=O)C(O)C",
+      "checks": [
+        "New molecule: combine ester and secondary-alcohol motifs.",
+        "Do not generate a carboxylic-acid canyon or acid-dimer band.",
+        "Keep methoxy, CHOH, methyl, and carbonyl NMR environments distinct."
+      ]
+    },
+    {
+      "smiles": "CCC(C)=O",
+      "checks": [
+        "New ketone: preserve the ketone band family without copying acetone's complete fingerprint.",
+        "1H: acyl CH3 singlet, alpha CH2 quartet, terminal CH3 triplet.",
+        "13C: four environments."
+      ]
+    },
+    {
+      "test": "representation_invariance",
+      "checks": [
+        "Equivalent atom-renumbered or differently written SMILES produce identical ordered band parameters and NMR environment sets.",
+        "Adding a functional group changes only its own motifs and chemically connected environment adjustments.",
+        "No ring or aromatic molecule reaches the renderer."
+      ]
+    }
+  ],
+  "do_not": [
+    "Claim the user-supplied model label verifies the serving model identity.",
+    "Memorize or interpolate a named molecule's full polyline.",
+    "Treat the supplied kinds metadata as NMR measurements.",
+    "Add aromatic out-of-plane bands to an acyclic non-aromatic generator.",
+    "Use random jags above 1500 or uniform random noise in the fingerprint region.",
+    "Use one Gaussian for all alcohols or copy one fingerprint to all alcohol classes.",
+    "Add OH to acetone or ethyl acetate because their traces contain small high-frequency depressions.",
+    "Treat the deep approximately 1880 acetic-acid depression as a required acid fundamental; it is not a trustworthy transferable assignment.",
+    "Learn a universal alkene-like approximately 3130 band from the saturated propionaldehyde trace.",
+    "Force every alcohol to have a carboxylic-acid-like tail to 2500.",
+    "Force every ester to reproduce ethyl acetate's exact 939/917 pair.",
+    "Force every secondary alcohol to reproduce the exact 954 minimum of 2-propanol.",
+    "Make the 1500-500 fingerprint region flat when the graph supplies bends, C-O, C-Br, or skeletal modes.",
+    "Populate the fingerprint with strong unassigned peaks merely to make it look experimental.",
+    "Double-count an acid OH as an alcohol OH or an ester as both acid and ether templates.",
+    "Assign carbonyl class using frequency alone instead of the molecular graph.",
+    "Merge NMR environments merely because they share CH3, CH2, C-O, or ppm-bin labels.",
+    "Apply n+1 blindly across inequivalent neighbor sets or diastereotopic CH2 systems.",
+    "Report precise shifts, intensities, conformer populations, or coupling constants as if measured.",
+    "Silently map unsupported acyclic chemistry to a saturated template."
+  ]
+}

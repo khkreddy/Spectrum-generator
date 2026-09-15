@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+out/canary/
+out/exam_luna/
+out/match_9701/
+out/astra/
+out/*.md
+data/*.csv
+data/*Zone.Identifier
+OpenAI*
+*.pdf
+review/static/compare/

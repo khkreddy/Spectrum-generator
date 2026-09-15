@@ -1,0 +1,759 @@
+{
+  "smiles_audit": [
+    {
+      "name": "ethanol",
+      "smiles": "CCO",
+      "correct": true,
+      "reason": "Two-carbon chain ending in an implicit O-H group: CH3CH2OH."
+    },
+    {
+      "name": "acetic acid",
+      "smiles": "CC(=O)O",
+      "correct": true,
+      "reason": "Methyl group attached to a carboxylic acid group: CH3COOH."
+    },
+    {
+      "name": "ethyl acetate",
+      "smiles": "CCOC(=O)C",
+      "correct": true,
+      "reason": "Ethoxy group attached through oxygen to an acetyl group: CH3COOCH2CH3."
+    },
+    {
+      "name": "benzaldehyde",
+      "smiles": "O=Cc1ccccc1",
+      "correct": true,
+      "reason": "The carbonyl carbon bears an implicit hydrogen and is directly attached to a benzene ring."
+    },
+    {
+      "name": "toluene",
+      "smiles": "Cc1ccccc1",
+      "correct": true,
+      "reason": "A methyl group is attached to a benzene ring."
+    },
+    {
+      "name": "acetone",
+      "smiles": "CC(=O)C",
+      "correct": true,
+      "reason": "The carbonyl carbon lies between two methyl groups: CH3COCH3."
+    },
+    {
+      "name": "aniline",
+      "smiles": "Nc1ccccc1",
+      "correct": true,
+      "reason": "Neutral nitrogen has two implicit hydrogens and is directly attached to benzene: C6H5NH2."
+    },
+    {
+      "name": "phenol",
+      "smiles": "Oc1ccccc1",
+      "correct": true,
+      "reason": "An O-H group is directly attached to an aromatic carbon."
+    },
+    {
+      "name": "1-bromobutane",
+      "smiles": "CCCCBr",
+      "correct": true,
+      "reason": "An unbranched four-carbon chain has bromine on a terminal carbon."
+    },
+    {
+      "name": "cyclohexene",
+      "smiles": "C1CCC=CC1",
+      "correct": true,
+      "reason": "A six-carbon ring contains exactly one carbon-carbon double bond."
+    },
+    {
+      "name": "acetyl chloride",
+      "smiles": "CC(=O)Cl",
+      "correct": true,
+      "reason": "Chlorine is directly bonded to the acetyl carbonyl carbon: CH3COCl."
+    },
+    {
+      "name": "nitrobenzene",
+      "smiles": "O=[N+]([O-])c1ccccc1",
+      "correct": true,
+      "reason": "A correctly charge-separated nitro group is attached to benzene through nitrogen."
+    },
+    {
+      "name": "propan-1-ol",
+      "smiles": "CCCO",
+      "correct": true,
+      "reason": "An unbranched three-carbon chain ends in CH2OH."
+    },
+    {
+      "name": "propan-2-ol",
+      "smiles": "CC(C)O",
+      "correct": true,
+      "reason": "The O-H group is attached to the central carbon of a three-carbon skeleton."
+    },
+    {
+      "name": "propanal",
+      "smiles": "CCC=O",
+      "correct": true,
+      "reason": "The terminal carbonyl carbon bears an implicit hydrogen: CH3CH2CHO."
+    },
+    {
+      "name": "propanoic acid",
+      "smiles": "CCC(=O)O",
+      "correct": true,
+      "reason": "An ethyl group is attached to a carboxylic acid carbon, giving three carbons overall."
+    },
+    {
+      "name": "butan-2-one",
+      "smiles": "CCC(=O)C",
+      "correct": true,
+      "reason": "The carbonyl carbon is bonded to ethyl and methyl groups; numbering gives position 2."
+    }
+  ],
+  "examiner_logic": {
+    "first_carbonyl_then_hydroxyl": {
+      "if": "A strong C=O absorption is present at approximately 1650-1800 cm^-1; also inspect just above 1800 for an acyl chloride.",
+      "then": {
+        "if": "A very broad O-H envelope spans approximately 2500-3300 cm^-1 and overlaps the C-H region.",
+        "then": "A carboxylic acid is strongly supported. Record both O-H and C=O.",
+        "else": {
+          "if": "A broad alcohol/phenol-like O-H band occurs near 3300 cm^-1 without swamping 2500 cm^-1.",
+          "then": "Record both hydroxyl and carbonyl functionality. This is not a carbonyl-only compound; consider a hydroxy-carbonyl structure.",
+          "else": {
+            "if": "A weak aldehydic C-H feature occurs near 2720 cm^-1, possibly accompanied by another near 2820 cm^-1.",
+            "then": "An aldehyde is supported; confirm with other information, especially a 1H NMR signal near 9-10 ppm.",
+            "else": "A carbonyl group is established, but its class is not settled. Consider ketone, ester, aldehyde, amide or acyl chloride using position, supporting bands and other spectra."
+          }
+        }
+      },
+      "else": {
+        "if": "A broad O-H band occurs near 3300 cm^-1 and does not extend strongly through 2500 cm^-1.",
+        "then": "An alcohol or phenol is supported; distinguish them using aromatic evidence and other spectra.",
+        "else": {
+          "if": "An acid-like, very broad 2500-3300 cm^-1 envelope appears despite no clear C=O.",
+          "then": "Recheck the carbonyl region and assignments. Do not confirm a carboxylic acid from broad O-H alone.",
+          "else": "No O-H is established. Narrower N-H or terminal alkyne C-H bands near this region must not be relabelled automatically as O-H."
+        }
+      }
+    },
+    "next_independently": {
+      "if": "A sharp absorption near 2250 cm^-1 is consistent with C≡N.",
+      "then": "Record a nitrile group in addition to any previously identified groups.",
+      "else": "No nitrile is established; continue without inventing a band."
+    },
+    "finally_support": {
+      "if": "C-O absorption at 1300-1000 cm^-1 or recognizable fingerprint bands support the proposed structure.",
+      "then": "Use these as corroboration: aromatic C-H out-of-plane at 900-675, alkene C-H out-of-plane at 1000-650, and C-Cl at 800-600 cm^-1. Do not let them override contradictory diagnostic evidence.",
+      "else": "Keep the conclusion at the functional-group level supported by the diagnostic regions; use MS and NMR to resolve ambiguity."
+    }
+  },
+  "ir_rules": [
+    {
+      "id": "alcohol_oh",
+      "smarts_or_flag": "[OX2H1][CX4]",
+      "center_cm-1": 3300,
+      "width": 400,
+      "depth_pct": 70,
+      "shape": "broad",
+      "must_show": true,
+      "region": "O-H stretching, approximately 3200-3600 cm^-1",
+      "note": "Hydrogen-bonded alcohol template. Broad, but not an acid-like envelope extending strongly to 2500. Width is an approximate FWHM in cm^-1; depth_pct is the downward percentage-point excursion from a 100% transmittance baseline. All values are schematic defaults, not fitted measurements."
+    },
+    {
+      "id": "phenol_oh",
+      "smarts_or_flag": "[OX2H1][c]",
+      "center_cm-1": 3350,
+      "width": 350,
+      "depth_pct": 65,
+      "shape": "broad",
+      "must_show": true,
+      "region": "O-H stretching, approximately 3200-3600 cm^-1",
+      "note": "Phenolic O-H can resemble alcoholic O-H. Use aromatic and aryl C-O evidence for support."
+    },
+    {
+      "id": "carboxylic_acid_oh",
+      "smarts_or_flag": "[CX3](=[OX1])[OX2H1]",
+      "center_cm-1": 2900,
+      "width": 800,
+      "depth_pct": 55,
+      "shape": "very_broad",
+      "must_show": true,
+      "region": "Very broad O-H, approximately 2500-3300 cm^-1",
+      "note": "Draw a continuous broad envelope overlapping alkyl C-H, not merely an alcohol-shaped band at 3300. Use smoothly limited tails, roughly 2400-3500, so the envelope does not create false carbonyl-region absorption."
+    },
+    {
+      "id": "primary_amine_nh_lower",
+      "smarts_or_flag": "flag:primary_amine_NH2",
+      "center_cm-1": 3350,
+      "width": 45,
+      "depth_pct": 25,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "N-H stretching, approximately 3300-3500 cm^-1",
+      "note": "One of two N-H stretching bands for a primary amine, including aniline. Flag excludes amides; actual positions depend on environment."
+    },
+    {
+      "id": "primary_amine_nh_upper",
+      "smarts_or_flag": "flag:primary_amine_NH2",
+      "center_cm-1": 3450,
+      "width": 45,
+      "depth_pct": 25,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "N-H stretching, approximately 3300-3500 cm^-1",
+      "note": "Second member of the NH2 pair; these bands are normally much narrower than the hydrogen-bonded alcohol O-H envelope."
+    },
+    {
+      "id": "saturated_ketone_carbonyl",
+      "smarts_or_flag": "flag:saturated_nonconjugated_ketone",
+      "center_cm-1": 1715,
+      "width": 35,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1700-1730 cm^-1",
+      "note": "Applies to acetone and butan-2-one. A separate hydroxyl elsewhere in the molecule does not suppress this rule."
+    },
+    {
+      "id": "conjugated_ketone_carbonyl",
+      "smarts_or_flag": "flag:conjugated_ketone",
+      "center_cm-1": 1690,
+      "width": 35,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1680-1710 cm^-1",
+      "note": "Conjugation usually lowers the ketone C=O frequency. Mutually exclusive with the saturated-ketone rule for the same carbonyl."
+    },
+    {
+      "id": "saturated_aldehyde_carbonyl",
+      "smarts_or_flag": "flag:nonconjugated_aldehyde",
+      "center_cm-1": 1730,
+      "width": 35,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1720-1740 cm^-1",
+      "note": "Applies to propanal. Carbonyl position alone is not a secure aldehyde-versus-ketone test."
+    },
+    {
+      "id": "conjugated_aldehyde_carbonyl",
+      "smarts_or_flag": "flag:conjugated_aldehyde",
+      "center_cm-1": 1700,
+      "width": 35,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1690-1720 cm^-1",
+      "note": "Applies to benzaldehyde, whose carbonyl is conjugated directly with the aromatic ring."
+    },
+    {
+      "id": "ester_carbonyl",
+      "smarts_or_flag": "flag:saturated_ester",
+      "center_cm-1": 1740,
+      "width": 35,
+      "depth_pct": 85,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1735-1750 cm^-1",
+      "note": "Applies to ethyl acetate. Include supporting C-O absorption and no O-H unless a separate hydroxyl group exists."
+    },
+    {
+      "id": "carboxylic_acid_carbonyl",
+      "smarts_or_flag": "[CX3](=[OX1])[OX2H1]",
+      "center_cm-1": 1710,
+      "width": 40,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1700-1730 cm^-1",
+      "note": "Applies to acetic and propanoic acids in a hydrogen-bonded condensed-phase template. Must accompany the acid O-H envelope."
+    },
+    {
+      "id": "acyl_chloride_carbonyl",
+      "smarts_or_flag": "[CX3](=[OX1])[Cl]",
+      "center_cm-1": 1800,
+      "width": 35,
+      "depth_pct": 85,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1780-1820 cm^-1",
+      "note": "Applies to acetyl chloride. Do not restrict carbonyl detection to frequencies strictly below 1800."
+    },
+    {
+      "id": "amide_carbonyl",
+      "smarts_or_flag": "[CX3](=[OX1])[NX3]",
+      "center_cm-1": 1670,
+      "width": 45,
+      "depth_pct": 75,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C=O stretching, approximately 1630-1690 cm^-1",
+      "note": "Supporting rule for carbonyl classification beyond the audited list. Amide N-H must be handled separately according to substitution."
+    },
+    {
+      "id": "nitrile",
+      "smarts_or_flag": "[CX2]#[NX1]",
+      "center_cm-1": 2250,
+      "width": 25,
+      "depth_pct": 55,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C≡N stretching, approximately 2220-2260 cm^-1",
+      "note": "An isolated sharp diagnostic band. None of the audited structures contains a nitrile."
+    },
+    {
+      "id": "alkyl_ch",
+      "smarts_or_flag": "[CX4;H1,H2,H3]",
+      "center_cm-1": 2925,
+      "width": 100,
+      "depth_pct": 40,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "sp3 C-H stretching, approximately 2850-3000 cm^-1",
+      "note": "A compact exam envelope representing several stretches, not a claim of one experimental normal mode. One or two resolved notches are sufficient."
+    },
+    {
+      "id": "alkene_or_aromatic_ch",
+      "smarts_or_flag": "flag:hydrogen_on_alkene_or_aromatic_carbon",
+      "center_cm-1": 3050,
+      "width": 45,
+      "depth_pct": 20,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "sp2 C-H stretching, approximately 3000-3100 cm^-1",
+      "note": "Supporting evidence above 3000. May be weak or obscured by O-H or N-H."
+    },
+    {
+      "id": "aldehyde_ch_lower",
+      "smarts_or_flag": "[CX3H1](=[OX1])[#6]",
+      "center_cm-1": 2720,
+      "width": 25,
+      "depth_pct": 12,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "Aldehydic C-H, approximately 2700-2750 cm^-1",
+      "note": "Include a modest recognizable band in an idealized aldehyde-identification template. It can be weak or undetectable experimentally; must_show is an exam-template choice, not a universal visibility claim."
+    },
+    {
+      "id": "aldehyde_ch_upper",
+      "smarts_or_flag": "[CX3H1](=[OX1])[#6]",
+      "center_cm-1": 2820,
+      "width": 25,
+      "depth_pct": 10,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "Aldehydic C-H, approximately 2800-2850 cm^-1",
+      "note": "Optional second member of the characteristic Fermi-resonance pair; may overlap ordinary C-H absorption."
+    },
+    {
+      "id": "alkene_cc",
+      "smarts_or_flag": "[CX3]=[CX3]",
+      "center_cm-1": 1650,
+      "width": 35,
+      "depth_pct": 20,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "C=C stretching, approximately 1620-1680 cm^-1",
+      "note": "Useful support for cyclohexene. Intensity is symmetry-dependent; do not render every alkene with a carbonyl-strength dip."
+    },
+    {
+      "id": "aromatic_ring_stretch",
+      "smarts_or_flag": "flag:aromatic_ring",
+      "center_cm-1": 1600,
+      "width": 35,
+      "depth_pct": 20,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "Aromatic ring stretching, approximately 1450-1600 cm^-1",
+      "note": "One representative ring-stretch band is enough at this grain. Do not mistake it for a strong C=O absorption or draw the complete aromatic fingerprint."
+    },
+    {
+      "id": "nitro_asymmetric",
+      "smarts_or_flag": "[N+](=[O])[O-]",
+      "center_cm-1": 1530,
+      "width": 40,
+      "depth_pct": 65,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "NO2 stretching, approximately 1500-1570 cm^-1",
+      "note": "One member of the strong nitro pair; important for nitrobenzene."
+    },
+    {
+      "id": "nitro_symmetric",
+      "smarts_or_flag": "[N+](=[O])[O-]",
+      "center_cm-1": 1350,
+      "width": 40,
+      "depth_pct": 60,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "NO2 stretching, approximately 1300-1370 cm^-1",
+      "note": "Second member of the nitro pair. Interpret the pair together rather than as generic C-O absorption."
+    },
+    {
+      "id": "primary_alcohol_co",
+      "smarts_or_flag": "[OX2H1][CX4H2]",
+      "center_cm-1": 1050,
+      "width": 45,
+      "depth_pct": 80,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C-O fingerprint stretching, within 1300-1000 cm^-1",
+      "note": "Applies to ethanol and propan-1-ol. A strong band in the approximate 1050-1100 exam bin is sufficient; do not copy the experimental multiplet of fingerprint absorptions."
+    },
+    {
+      "id": "secondary_alcohol_co",
+      "smarts_or_flag": "[OX2H1][CX4H1]",
+      "center_cm-1": 1100,
+      "width": 45,
+      "depth_pct": 75,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C-O fingerprint stretching, within 1300-1000 cm^-1",
+      "note": "Applies to propan-2-ol. This approximate shift is supporting evidence, not a secure standalone distinction from propan-1-ol."
+    },
+    {
+      "id": "phenol_co",
+      "smarts_or_flag": "[OX2H1][c]",
+      "center_cm-1": 1220,
+      "width": 45,
+      "depth_pct": 60,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "Aryl C-O fingerprint stretching, approximately 1180-1260 cm^-1",
+      "note": "Supports phenol together with broad O-H and aromatic evidence."
+    },
+    {
+      "id": "carboxylic_acid_co",
+      "smarts_or_flag": "[CX3](=[OX1])[OX2H1]",
+      "center_cm-1": 1250,
+      "width": 50,
+      "depth_pct": 50,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "C-O fingerprint stretching, approximately 1210-1320 cm^-1",
+      "note": "Supporting acid band; the compulsory exam evidence is very broad O-H plus strong C=O."
+    },
+    {
+      "id": "ester_co_upper",
+      "smarts_or_flag": "[CX3](=[OX1])[OX2][#6]",
+      "center_cm-1": 1240,
+      "width": 45,
+      "depth_pct": 65,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C-O fingerprint stretching, approximately 1150-1300 cm^-1",
+      "note": "Strong supporting ester absorption. Position varies with the ester; this is suitable for ethyl acetate."
+    },
+    {
+      "id": "ester_co_lower",
+      "smarts_or_flag": "[CX3](=[OX1])[OX2][#6]",
+      "center_cm-1": 1050,
+      "width": 40,
+      "depth_pct": 45,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "C-O fingerprint stretching, approximately 1000-1150 cm^-1",
+      "note": "Optional second representative ester C-O band; do not generate a fingerprint forest."
+    },
+    {
+      "id": "ether_co",
+      "smarts_or_flag": "flag:non_acyl_ether_C_O_C",
+      "center_cm-1": 1100,
+      "width": 45,
+      "depth_pct": 65,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "C-O fingerprint stretching, within 1300-1000 cm^-1",
+      "note": "Flag excludes ester oxygen. C-O alone cannot establish alcohol because ethers and esters also absorb here."
+    },
+    {
+      "id": "monosubstituted_aromatic_oop_upper",
+      "smarts_or_flag": "flag:monosubstituted_benzene",
+      "center_cm-1": 750,
+      "width": 30,
+      "depth_pct": 50,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "Aromatic C-H out-of-plane fingerprint, within 900-675 cm^-1",
+      "note": "Appropriate supporting band for the monosubstituted benzene derivatives in the audit. Other substitution patterns require different bins."
+    },
+    {
+      "id": "monosubstituted_aromatic_oop_lower",
+      "smarts_or_flag": "flag:monosubstituted_benzene",
+      "center_cm-1": 690,
+      "width": 25,
+      "depth_pct": 45,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "Aromatic C-H out-of-plane fingerprint, within 900-675 cm^-1",
+      "note": "Optional second prominent band of the usual monosubstituted-benzene pattern."
+    },
+    {
+      "id": "cis_disubstituted_alkene_oop",
+      "smarts_or_flag": "flag:cis_disubstituted_alkene_with_two_vinylic_H",
+      "center_cm-1": 700,
+      "width": 40,
+      "depth_pct": 50,
+      "shape": "sharp",
+      "must_show": true,
+      "region": "Alkene C-H out-of-plane fingerprint, within 1000-650 cm^-1",
+      "note": "Suitable coarse support for cyclohexene. Do not apply 700 universally: trans-disubstituted alkenes commonly absorb near 965, and terminal CH2=CH groups near 990 and 910."
+    },
+    {
+      "id": "carbon_chlorine",
+      "smarts_or_flag": "[#6]-[Cl]",
+      "center_cm-1": 700,
+      "width": 45,
+      "depth_pct": 35,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "Taught C-Cl fingerprint bin, approximately 800-600 cm^-1",
+      "note": "Supporting, environment-dependent evidence only. Do not force this generic position onto every acyl chloride; acetyl chloride identification should prioritize high-frequency C=O and chlorine isotope evidence."
+    },
+    {
+      "id": "carbon_bromine",
+      "smarts_or_flag": "[CX4]-[Br]",
+      "center_cm-1": 600,
+      "width": 45,
+      "depth_pct": 35,
+      "shape": "sharp",
+      "must_show": false,
+      "region": "C-Br fingerprint support, approximately 650-500 cm^-1",
+      "note": "Optional for 1-bromobutane. Bromine isotope evidence in MS is substantially more distinctive than this low-frequency IR band."
+    }
+  ],
+  "ethanol_sdbs_vs_exam": {
+    "observations_from_attached_gifs": {
+      "ir": "The ethanol trace shows a broad O-H trough around 3300, a C-H cluster around 3000-2850, and very strong absorption around 1100-1050 cm^-1. It also contains many smaller fingerprint features, but no strong carbonyl absorption.",
+      "hnmr": "The displayed spectrum has a methyl triplet near 1.2 ppm, a methylene quartet-like group near 3.7 ppm, and an exchangeable-proton feature near 2.6 ppm. The displayed O-H feature is relatively narrow; it need not be reproduced with that exact shape.",
+      "cnmr": "Two analyte resonances are visible, approximately 18 and 58 ppm.",
+      "ms": "The base peak is m/z 31; m/z 45 is substantial and the molecular ion at m/z 46 is clearly visible at roughly one quarter of the base-peak intensity.",
+      "limits": "The GIFs do not establish solvent identity, acquisition conditions or the origin of every minor feature. No minor band should be confidently labelled as contamination from these images alone."
+    },
+    "must_appear": {
+      "ir": [
+        "Broad alcohol O-H near 3300 cm^-1, without acid-like extension through 2500.",
+        "Recognizable alkyl C-H absorption near 2900 cm^-1.",
+        "Strong representative C-O absorption near 1050-1100 cm^-1.",
+        "No C=O dip near 1700; keep the simplified 2000-1500 cm^-1 region flat for ethanol."
+      ],
+      "hnmr": [
+        "CH3 triplet near 1.2 ppm, integrating to 3 H.",
+        "CH2 quartet near 3.6-3.7 ppm, integrating to 2 H.",
+        "One explicitly identified, position-variable O-H signal for the neutral ethanol template."
+      ],
+      "cnmr": [
+        "Exactly two ethanol carbon environments, near 18 and 58 ppm."
+      ],
+      "ms": [
+        "m/z 31 as base peak.",
+        "m/z 45 as a major fragment.",
+        "m/z 46 as the molecular ion."
+      ]
+    },
+    "must_omit": [
+      "The experimental IR fingerprint forest: retain selected taught support bands, not every bending mode, shoulder and low-frequency trough.",
+      "Solvent, reference, water or impurity signals from the analyte-only model unless the question explicitly requests them; do not mistake ethanol's O-H resonance near 2.6 ppm for solvent merely because its position is variable.",
+      "Baseline noise, pixel artefacts, drift and instrumental ripples.",
+      "Unassigned minor experimental IR features that would falsely suggest a carbonyl or another absent functional group.",
+      "Fine NMR structure beyond the intended first-order exam multiplets, including condition-specific O-H coupling and isotope satellites."
+    ],
+    "rendering_contract": [
+      "Generate bands from molecular functionality and chemistry; do not fit the Cambridge trace or digitize the SDBS GIF into a curve.",
+      "IR axes: transmittance from 0 to 100%, absorptions downward, wavenumber decreasing left to right. A clearly labelled 4000-to-400 or 500 cm^-1 range is suitable.",
+      "The ir_rules positions, widths and depths are coarse drawing defaults. must_show=true means retain the feature in the selected idealized exam template when its condition matches; false means optional support, not chemical absence.",
+      "Apply carbonyl subtype rules exclusively to each carbonyl group, but allow genuinely separate functional groups to contribute together.",
+      "Do not multiply a schematic band depth simply because a SMARTS query returns several equivalent matches.",
+      "Use localized, smoothly bounded band profiles and bounded overlap handling. Do not let broad-band tails manufacture absorption in diagnostic regions that should be empty.",
+      "For the stated propan-1-ol exam target, the same alcohol pattern applies: O-H around 3300, C-H around 2900, flat 2000-1500 baseline, and strong C-O around 1100."
+    ]
+  },
+  "hnmr_exam_grain": {
+    "principles": [
+      "Predict chemically equivalent proton sets using connectivity, symmetry and the assumed medium; do not create one resonance per hydrogen atom.",
+      "Show identifiable chemical-shift regions, multiplicity and integration. Multiplet area, not tallest-line height, represents proton count.",
+      "Use n+1 splitting only for appropriate first-order coupling to n equivalent neighbouring protons. It is not a universal rule for aromatic or strongly coupled systems.",
+      "Under the usual rapid-exchange exam assumption, O-H does not split adjacent C-H signals and is not itself split by them. Its shift, width and apparent integral are condition-dependent.",
+      "Preserve relative line spacings from a common J value, while using enough drawing separation for triplets and quartets to remain readable.",
+      "Use a chemical-shift axis in ppm increasing to the left. Exclude solvent and TMS peaks unless requested."
+    ],
+    "ethanol_worked_example": {
+      "assumption": "Neutral ethanol in an achiral medium with rapid O-H exchange; simplified first-order spectrum.",
+      "signals": [
+        {
+          "assignment": "CH3CH2OH: CH3",
+          "delta_ppm": 1.2,
+          "approximate_range_ppm": [
+            1.0,
+            1.4
+          ],
+          "multiplicity": "triplet",
+          "integration_H": 3,
+          "line_intensity_ratio": [
+            1,
+            2,
+            1
+          ],
+          "J_Hz": 7,
+          "must_show": true
+        },
+        {
+          "assignment": "CH3CH2OH: CH2",
+          "delta_ppm": 3.7,
+          "approximate_range_ppm": [
+            3.4,
+            3.9
+          ],
+          "multiplicity": "quartet",
+          "integration_H": 2,
+          "line_intensity_ratio": [
+            1,
+            3,
+            3,
+            1
+          ],
+          "J_Hz": 7,
+          "must_show": true
+        },
+        {
+          "assignment": "CH3CH2OH: OH",
+          "delta_ppm": 2.6,
+          "approximate_range_ppm": [
+            1.0,
+            5.0
+          ],
+          "multiplicity": "exchangeable singlet, often broad",
+          "integration_H": 1,
+          "line_intensity_ratio": null,
+          "J_Hz": null,
+          "must_show": true,
+          "note": "2.6 ppm is a convenient image-consistent example, not a fixed ethanol identifier or a hard allowable range. D2O exchange removes this signal."
+        }
+      ],
+      "required_identification": "Three proton environments in the idealized neutral-molecule spectrum; nonexchangeable integration ratio 3:2, ideally 3:2:1 including O-H. The 1.2 ppm triplet and 3.6-3.7 ppm quartet establish the characteristic ethyl pattern next to oxygen.",
+      "drawing_note": "Triplet and quartet line ratios apply within each multiplet. Normalize their total areas to 3 and 2 respectively rather than using equal overall peak heights."
+    }
+  },
+  "cnmr_exam_grain": {
+    "principles": [
+      "State the normal exam assumption: broadband proton-decoupled 13C NMR.",
+      "Draw one singlet-like line for each chemically distinct carbon environment, respecting molecular symmetry.",
+      "Use diagnostic shift regions rather than experimental linewidths or tiny shift differences.",
+      "Do not use ordinary 13C peak heights as carbon counts; relaxation and nuclear Overhauser enhancement make them nonquantitative.",
+      "Do not apply proton n+1 splitting to a broadband-decoupled 13C spectrum.",
+      "Omit solvent, reference peaks, satellites and noise unless explicitly requested."
+    ],
+    "ethanol_worked_example": {
+      "number_of_carbon_environments": 2,
+      "signals": [
+        {
+          "assignment": "CH3",
+          "delta_ppm": 18,
+          "approximate_range_ppm": [
+            15,
+            20
+          ],
+          "multiplicity": "singlet in broadband-decoupled spectrum",
+          "must_show": true
+        },
+        {
+          "assignment": "CH2 bonded to O",
+          "delta_ppm": 58,
+          "approximate_range_ppm": [
+            55,
+            65
+          ],
+          "multiplicity": "singlet in broadband-decoupled spectrum",
+          "must_show": true
+        }
+      ],
+      "required_absences": "No carbonyl carbon, aromatic carbon or alkene carbon signals.",
+      "drawing_note": "Two clean sticks are enough. Comparable heights are acceptable schematic styling but must not be presented as quantitative integration."
+    }
+  },
+  "ms_exam_grain": {
+    "principles": [
+      "Specify electron-ionization positive-ion MS for this ethanol example. Molecular-ion and fragmentation expectations change with ionization method.",
+      "Use a stick spectrum with increasing m/z to the right and relative intensity normalized to a base peak of 100.",
+      "Retain a small set of diagnostic ions, the molecular ion when supported, and informative isotope patterns. Do not reproduce every weak experimental stick.",
+      "The base peak need not be the molecular ion. For singly charged ions, the molecular-ion nominal m/z corresponds to the molecular nominal mass.",
+      "Require chemically plausible ionic formulas and neutral losses. SMILES alone does not determine precise fragment intensities.",
+      "For a single chlorine atom, retain approximately 3:1 M:M+2 evidence when the relevant ion is visible; for a single bromine atom, approximately 1:1. Apply these patterns only to ions retaining the halogen.",
+      "Do not make a molecular ion mandatory for every compound, or make a dehydration fragment dominant merely because an alcohol is present."
+    ],
+    "ethanol_worked_example": {
+      "formula": "C2H6O",
+      "nominal_molecular_mass": 46,
+      "ionization": "EI, positive ions",
+      "required_peaks": [
+        {
+          "mz": 31,
+          "relative_intensity_pct": 100,
+          "assignment": "CH2OH+ is the standard alcohol-fragment assignment; nominal formula CH3O+.",
+          "must_show": true,
+          "note": "Dominant oxygen-containing fragment, commonly explained by alpha cleavage with loss of a methyl radical."
+        },
+        {
+          "mz": 45,
+          "relative_intensity_pct": 57,
+          "assignment": "[M-H]+, C2H5O+.",
+          "must_show": true,
+          "note": "Major fragment visible in the attached spectrum; exact relative height is not an exam requirement."
+        },
+        {
+          "mz": 46,
+          "relative_intensity_pct": 25,
+          "assignment": "Molecular radical cation, C2H6O+•.",
+          "must_show": true,
+          "note": "Clearly identifiable molecular ion, weaker than m/z 31 and 45."
+        }
+      ],
+      "optional_supporting_peaks": [
+        {
+          "mz": 27,
+          "relative_intensity_pct": 18,
+          "assignment": "C2H3+."
+        },
+        {
+          "mz": 29,
+          "relative_intensity_pct": 12,
+          "assignment": "A nominal-mass fragment; C2H5+ is a possible assignment, but unit-mass resolution alone does not exclude isobaric CHO+."
+        }
+      ],
+      "intensity_policy": "These rounded heights summarize the attached GIF for a worked example; they are not universal predictions from ethanol's SMILES.",
+      "isotope_policy": "No prominent chlorine- or bromine-like M+2 pair. The small natural-abundance M+1 signal may be omitted at this grain.",
+      "minimum_identifiable_pattern": "Base peak 31, major fragment 45, molecular ion 46."
+    }
+  },
+  "pitfalls": [
+    {
+      "id": "hydroxy_ketone_is_multifunctional",
+      "warning": "A hydroxy-ketone has both O-H and C=O. Drawing only the ketone band or treating it as a 9701 ketone-only example misrepresents its structure.",
+      "action": "Accumulate rules for separate functional groups. Reserve a ketone-only IR template for a molecule with no additional diagnostic hydroxyl or other group."
+    },
+    {
+      "id": "aldehyde_vs_ketone_ir",
+      "warning": "Aldehyde and ketone carbonyl frequencies overlap. Without weak aldehydic C-H near 2720, often accompanied by 2820 cm^-1, IR discrimination is weak.",
+      "action": "Use a modest aldehydic C-H feature in an idealized identification diagram, but do not treat its experimental absence as proof of a ketone. Seek a 1H NMR aldehyde resonance near 9-10 ppm."
+    },
+    {
+      "id": "alcohol_vs_acid_oh",
+      "warning": "A broad dip at 3300 alone does not distinguish every O-H-containing compound. The acid signature is a much broader 2500-3300 envelope together with C=O.",
+      "action": "Preserve the different envelope widths and the acid carbonyl; do not create an acid by merely broadening an alcohol band slightly."
+    },
+    {
+      "id": "false_carbonyl_from_rendering",
+      "warning": "Long tails, generic background curves or copied weak experimental structure can create a false 1700 cm^-1 feature in ethanol or propan-1-ol.",
+      "action": "Keep their simplified 2000-1500 baseline flat. Draw a carbonyl dip only when the molecular structure justifies it."
+    },
+    {
+      "id": "fingerprint_is_support_not_forest",
+      "warning": "Omitting all fingerprint information loses useful C-O and out-of-plane evidence; reproducing every fingerprint feature defeats the exam grain.",
+      "action": "Keep selected taught bands at approximately 1300-1000, 900-675, 1000-650 and 800-600 cm^-1 as applicable, with substitution-aware assignments."
+    },
+    {
+      "id": "ir_does_not_uniquely_identify_isomers",
+      "warning": "The simplified IR spectra of propan-1-ol and propan-2-ol share the same principal functional-group evidence.",
+      "action": "Do not promise positional-isomer identification from small C-O shifts. Use 1H and 13C environment counts and splitting."
+    },
+    {
+      "id": "spectral_values_are_conditional",
+      "warning": "Phase, concentration, solvent, exchange and instrument conditions affect band widths, O-H shifts and MS intensities.",
+      "action": "Label values as approximate chemistry-based bins. Preserve diagnostic relationships rather than claiming experimental precision."
+    }
+  ]
+}

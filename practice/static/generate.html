@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Canonical aliphatic IR generator</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@rod2ik/tikzjax@1.6.0/dist/fonts.min.css">
+<link rel="stylesheet" href="practice.css">
+<script>
+window.TikzJaxOptions = { renderTimeout: 30000, maxRetries: 1, theme: { applyTargetStyles: false, adaptiveColors: { enabled: false } } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/@rod2ik/tikzjax@1.6.0/dist/tikzjax.min.js"></script>
+<body>
+<header class="top">
+  <div>
+    <h1>Canonical aliphatic generator</h1>
+    <p class="sub">Open-chain aliphatic only. The IR envelope is the 9701 exam-paper TikZ for that functional-group class (ketone, ester, acid, 1°/2° alcohol, polyol).</p>
+  </div>
+  <nav>
+    <a href="hub.html">Home</a>
+    <a href="student.html">Student</a>
+    <a href="teacher.html">Teacher</a>
+    <a href="generate.html" class="on">Generator</a>
+  </nav>
+</header>
+<div class="wrap">
+  <form id="f">
+    <input id="mol" type="text" placeholder="propan-1-ol  ·  CC(=O)O  ·  ethyl ethanoate" autocomplete="off">
+    <button class="act" type="submit">Generate IR</button>
+  </form>
+  <p class="muted">Examples:
+    <a href="#" data-m="propanone">propanone</a> ·
+    <a href="#" data-m="propan-1-ol">propan-1-ol</a> ·
+    <a href="#" data-m="propan-2-ol">propan-2-ol</a> ·
+    <a href="#" data-m="ethanoic acid">ethanoic acid</a> ·
+    <a href="#" data-m="propanoic acid">propanoic acid</a> ·
+    <a href="#" data-m="ethyl ethanoate">ethyl ethanoate</a> ·
+    <a href="#" data-m="glycerol">glycerol</a>
+  </p>
+  <p class="err" id="err"></p>
+  <article class="paper" id="out" hidden></article>
+</div>
+<script src="generate.js"></script>
+</body>
+</html>

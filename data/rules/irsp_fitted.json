@@ -1,0 +1,214 @@
+{
+  "schema": "irsp.fitted.v1",
+  "note": "Shared family parameters. Inference uses SMILES\u2192family only; gold polylines are not stored here.",
+  "families": {
+    "alcohol": {
+      "baseline": 90.0,
+      "oh_nu": 3340.7731527680517,
+      "oh_sig": 220.0,
+      "oh_amp": 90.0,
+      "ch": [
+        [
+          2960,
+          10,
+          90.0
+        ],
+        [
+          2925,
+          10,
+          90.0
+        ],
+        [
+          2870,
+          10,
+          80.0
+        ]
+      ],
+      "co_nu": 1024.1510526166371,
+      "co_g": 35.0,
+      "co_a": 90.0,
+      "jag_n": 8,
+      "jag_amp": 16.0
+    },
+    "ketone": {
+      "baseline": 90.0,
+      "oh_amp": 0.0,
+      "ch": [
+        [
+          2965,
+          10,
+          22
+        ],
+        [
+          2920,
+          10,
+          8.0
+        ],
+        [
+          2870,
+          10,
+          18
+        ]
+      ],
+      "co_nu": 1708.4060861597106,
+      "co_g": 25.0,
+      "co_a": 92.0,
+      "fpr_nu": 1220.0,
+      "fpr_g": 16.0,
+      "fpr_a": 60.376589390337834,
+      "jag_n": 7,
+      "jag_amp": 14.0
+    },
+    "acid": {
+      "baseline": 90.0,
+      "oh_nu": 2800.0,
+      "oh_sig": 550.0,
+      "oh_amp": 50.0,
+      "oh_n": 4.0,
+      "ch": [
+        [
+          2960,
+          10,
+          28
+        ],
+        [
+          2935,
+          10,
+          32
+        ],
+        [
+          2875,
+          10,
+          22
+        ]
+      ],
+      "co_nu": 1740.0,
+      "co_g": 25.0,
+      "co_a": 87.48074239398782,
+      "fp": [
+        [
+          1280,
+          22,
+          20.0
+        ],
+        [
+          1240,
+          16,
+          15.0
+        ],
+        [
+          1080,
+          18,
+          40
+        ]
+      ],
+      "jag_n": 10,
+      "jag_amp": 18.0
+    },
+    "aldehyde": {
+      "baseline": 90.0,
+      "oh_amp": 0.0,
+      "ch": [
+        [
+          2960,
+          10,
+          24
+        ],
+        [
+          2920,
+          10,
+          28
+        ],
+        [
+          2870,
+          10,
+          18
+        ]
+      ],
+      "co_nu": 1730.0,
+      "co_g": 14.0,
+      "co_a": 80.0,
+      "cho_nu": 2720.0,
+      "cho_g": 10.0,
+      "cho_a": 28.0,
+      "jag_n": 7,
+      "jag_amp": 9.0
+    }
+  },
+  "reconstruction": {
+    "alcohol": {
+      "CCCO": {
+        "rmse_T": 16.75,
+        "pearson_r": 0.893,
+        "score_no_f1": 53.4
+      },
+      "CC(C)O": {
+        "rmse_T": 23.8,
+        "pearson_r": 0.698,
+        "score_no_f1": 41.9
+      },
+      "OCC(O)CO": {
+        "rmse_T": 30.99,
+        "pearson_r": 0.69,
+        "score_no_f1": 35.9
+      }
+    },
+    "ketone": {
+      "CC(C)=O": {
+        "rmse_T": 13.92,
+        "pearson_r": 0.627,
+        "score_no_f1": 47.7
+      }
+    },
+    "acid": {
+      "CC(=O)O": {
+        "rmse_T": 33.0,
+        "pearson_r": 0.059,
+        "score_no_f1": 15.4
+      },
+      "CCC(=O)O": {
+        "rmse_T": 35.72,
+        "pearson_r": -0.064,
+        "score_no_f1": 11.4
+      }
+    }
+  },
+  "leave_one_out": {
+    "CCCO": {
+      "held_out": true,
+      "rmse_T": 17.18,
+      "pearson_r": 0.883,
+      "score_no_f1": 52.7
+    },
+    "CC(C)O": {
+      "held_out": true,
+      "rmse_T": 23.82,
+      "pearson_r": 0.697,
+      "score_no_f1": 41.9
+    },
+    "CC(C)=O": {
+      "note": "no same-family holdout",
+      "rmse_T": 13.92,
+      "pearson_r": 0.627,
+      "score_no_f1": 47.7
+    },
+    "CC(=O)O": {
+      "held_out": true,
+      "rmse_T": 34.53,
+      "pearson_r": -0.051,
+      "score_no_f1": 12.4
+    },
+    "CCC(=O)O": {
+      "held_out": true,
+      "rmse_T": 35.81,
+      "pearson_r": -0.071,
+      "score_no_f1": 11.3
+    },
+    "OCC(O)CO": {
+      "held_out": true,
+      "rmse_T": 31.26,
+      "pearson_r": 0.688,
+      "score_no_f1": 35.6
+    }
+  }
+}
