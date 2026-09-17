@@ -17,7 +17,6 @@
     const start = new Set(U.TECH.map((t) => t.id).filter((id) => (c[id] || 0) > 0));
     $("filters").innerHTML = U.filterBar(all, start);
     $("filters").onchange = applyFilter;
-    $("nmr-note").hidden = (c.nmr || 0) > 0;
   }
 
   function render() {
@@ -81,7 +80,7 @@
     const key = $("print-key");
     paper.innerHTML = chosen.map((it, n) => U.paperArticle(it, n)).join("");
     if (!$("answers").checked) { key.innerHTML = ""; return; }
-    key.innerHTML = "<h2>Answer key · learn-by-solve</h2>" + chosen.map((it, n) => {
+    key.innerHTML = "<h2>Answer key</h2>" + chosen.map((it, n) => {
       const lbs = it.lbs || {};
       const wrong = lbs.wrong || {};
       const rows = U.LETTERS.filter((k) => k !== it.key).map((k) => {
