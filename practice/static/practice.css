@@ -107,26 +107,25 @@ body.app .layout { flex: 1; overflow: hidden; }
 .list .meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
 .pad { padding: 16px; }
 main.pane {
-  padding: 12px 16px 16px; overflow: hidden; min-height: 0;
-  display: flex; flex-direction: column;
+  padding: 12px 16px 16px; overflow: auto; min-height: 0;
 }
 .paper {
-  background: var(--paper); border: 1px solid #c9c0b2; padding: 14px 18px 16px;
-  max-width: 210mm; width: 100%; box-shadow: 0 8px 24px rgba(40,30,10,.12);
-  min-height: 0; flex: 1;
-  overflow: auto;
+  background: var(--paper); border: 1px solid #c9c0b2; padding: 18px 22px 24px;
+  width: 210mm; max-width: 100%; margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(40,30,10,.12);
+  font-size: 16px;
 }
 .q-scroll { min-height: min-content; }
 .q-body { margin-bottom: 8px; }
-.q-body .orig, .q-scroll .orig {
-  max-width: 100%; max-height: 70vh; height: auto; display: block; margin: 8px auto 12px;
-  object-fit: contain;
+.q-body .orig, .q-scroll .orig, .orig {
+  width: 100%; max-width: 100%; height: auto; max-height: none;
+  display: block; margin: 8px auto 12px;
 }
 .hint-box {
   margin-top: 12px; padding: 10px 12px; background: #fff; border: 1px solid var(--line);
 }
 .uid { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-.stem { white-space: pre-wrap; margin: 10px 0 14px; }
+.stem { white-space: pre-wrap; margin: 10px 0 14px; font-size: 16px; }
 .stem-table {
   width: 100%; border-collapse: collapse; margin: 12px 0 16px;
   font-size: 13px; font-family: "Source Sans 3", "Segoe UI", sans-serif;
@@ -209,9 +208,9 @@ table.sel td, table.sel th {
   .print-q, .key-block { break-inside: avoid; margin-bottom: 18px; }
   .print-key { page-break-before: always; padding: 18px 22px; }
   body { background: #fff; overflow: visible; }
-  .paper { box-shadow: none; border: 0; display: block; overflow: visible; height: auto; }
+  .paper { box-shadow: none; border: 0; display: block; overflow: visible; height: auto; width: 210mm; max-width: 100%; }
   .q-scroll, .q-body { overflow: visible; }
-  .orig { max-height: none; }
+  .orig { width: 100%; height: auto; max-height: none; }
   .opts label.opt { border: 1px solid #ccc; }
 }
 @media (max-width: 800px) {
