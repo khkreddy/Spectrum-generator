@@ -1,40 +1,64 @@
 (function () {
+  const U = window.SpectraUI;
+  let all = [];
   let items = [];
   const $ = (id) => document.getElementById(id);
 
+  function applyFilter() {
+    const sel = U.selectedSet($("filters"));
+    items = U.filterItems(all, sel);
+    render();
+    renderPrint();
+    $("count").textContent = items.length + " question" + (items.length === 1 ? "" : "s");
+  }
+
+  function renderFilters() {
+    const c = U.counts(all);
+    const start = new Set(U.TECH.map((t) => t.id).filter((id) => (c[id] || 0) > 0));
+    $("filters").innerHTML = U.filterBar(all, start);
+    $("filters").onchange = applyFilter;
+    $("nmr-note").hidden = (c.nmr || 0) > 0;
+  }
+
   function render() {
     $("tbl").innerHTML =
-      "<tr><th></th><th>uid</th><th>type</th><th>key</th><th>LBS</th><th>examiner</th></tr>" +
+      "<tr><th></th><th>uid</th><th>technique</th><th>key</th><th>LBS</th><th>figure</th><th>examiner</th></tr>" +
       items.map((it, i) =>
-        "<tr><td><input type='checkbox' data-i='" + i + "' " +
-        (it.key ? "checked" : "") + "></td>" +
-        "<td class='mono'>" + it.uid + "</td>" +
-        "<td>" + (it.spectrum_types || []).join(", ") + "</td>" +
-        "<td>" + (it.key || "—") + "</td>" +
-        "<td>" + (it.lbs ? "yes" : "") + "</td>" +
+        "<tr><td><input type='checkbox' data-i='" + i + "' checked></td>" +
+        "<td class='mono'>" + U.esc(it.uid) + "</td>" +
+        "<td>" + U.techBadge(it) + "</td>" +
+        "<td>" + U.esc(it.key || "—") + "</td>" +
+        "<td>" + (it.lbs || it.has_lbs ? "yes" : "") + "</td>" +
+        "<td>" + (it.original_base64 || it.original_url ? "yes" : "") + "</td>" +
         "<td>" + (it.examiner_comment ? "yes" : "") + "</td></tr>"
       ).join("");
   }
 
-  function selected() {
-    return [...document.querySelectorAll("input[data-i]:checked")].map((el) => items[+el.getAttribute("data-i")].uid);
+  function selectedItems() {
+    const boxes = [...document.querySelectorAll("input[data-i]:checked")];
+    if (!boxes.length) return [];
+    return boxes.map((el) => items[+el.getAttribute("data-i")]).filter(Boolean);
   }
 
   $("all").onclick = () => {
     document.querySelectorAll("input[data-i]").forEach((el) => { el.checked = true; });
+    renderPrint();
   };
-  $("none").onclick = () => document.querySelectorAll("input[data-i]").forEach((el) => { el.checked = false; });
+  $("none").onclick = () => {
+    document.querySelectorAll("input[data-i]").forEach((el) => { el.checked = false; });
+    renderPrint();
+  };
 
   $("dl").onclick = async () => {
     const err = $("err");
     err.textContent = "";
-    const uids = selected();
-    if (!uids.length) { err.textContent = "Select at least one question."; return; }
+    const chosen = selectedItems();
+    if (!chosen.length) { err.textContent = "Select at least one question."; return; }
     try {
       const r = await fetch("/api/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uids, answers: $("answers").checked }),
+        body: JSON.stringify({ uids: chosen.map((it) => it.uid), answers: $("answers").checked }),
       });
       if (r.ok) {
         const blob = await r.blob();
@@ -52,36 +76,26 @@
   $("print").onclick = () => window.print();
 
   function renderPrint() {
-    const uids = new Set(selected());
-    const chosen = items.filter((it) => uids.has(it.uid));
+    const chosen = selectedItems();
     const paper = $("print-paper");
     const key = $("print-key");
-    paper.innerHTML = chosen.map((it, n) => {
-      const img = it.original_base64
-        ? "<img class='orig' src='" + it.original_base64 + "' alt=''>"
-        : "";
-      const opts = ["A", "B", "C", "D"].map((k) => {
-        const t = (it.options || {})[k] || "";
-        if (it.options_are_figure || !t) return "<div class='opt-line'><b>" + k + "</b></div>";
-        return "<div class='opt-line'><b>" + k + "</b> " + t + "</div>";
-      }).join("");
-      return "<article class='paper print-q'><div class='uid'>" + (n + 1) + ". " + it.uid +
-        "</div><p class='stem'>" + (it.stem || "") + "</p>" + img + opts + "</article>";
-    }).join("");
-    key.innerHTML = "<h2>Answer key</h2>" + chosen.map((it, n) => {
+    paper.innerHTML = chosen.map((it, n) => U.paperArticle(it, n)).join("");
+    if (!$("answers").checked) { key.innerHTML = ""; return; }
+    key.innerHTML = "<h2>Answer key · learn-by-solve</h2>" + chosen.map((it, n) => {
       const lbs = it.lbs || {};
       const wrong = lbs.wrong || {};
-      const rows = ["A", "B", "C", "D"].filter((k) => k !== it.key).map((k) => {
+      const rows = U.LETTERS.filter((k) => k !== it.key).map((k) => {
         const row = wrong[k] || {};
         const fu = row.followup || {};
-        return "<li><b>If " + k + "</b> [" + (row.mx_type || "") + "] " +
-          (row.pathway || "") +
-          (fu.stem ? "<br><i>Follow-up:</i> " + fu.stem + " (key " + (fu.key || "") + ")" : "") +
+        return "<li><b>If " + k + "</b> [" + U.esc(row.mx_type || "") + "] " +
+          U.esc(row.pathway || "") +
+          (fu.stem ? "<br><i>Follow-up:</i> " + U.esc(fu.stem) + " (key " + U.esc(fu.key || "") + ")" : "") +
           "</li>";
       }).join("");
-      return "<article class='key-block'><h3>" + (n + 1) + ". " + it.uid + " → " + (it.key || "—") +
-        "</h3><p>" + (lbs.solve || "") + "</p><ul>" + rows + "</ul>" +
-        (it.examiner_comment ? "<p class='comment'>" + it.examiner_comment + "</p>" : "") +
+      return "<article class='key-block'><h3>" + (n + 1) + ". " + U.esc(it.uid) + " → " + U.esc(it.key || "—") +
+        "</h3>" + U.stemHtml(it.stem) + U.figureHtml(it, "orig small") +
+        "<p>" + U.esc(lbs.solve || "") + "</p><ul>" + rows + "</ul>" +
+        (it.examiner_comment ? "<p class='comment'>" + U.esc(it.examiner_comment) + "</p>" : "") +
         "</article>";
     }).join("");
   }
@@ -91,9 +105,9 @@
   });
 
   function boot(doc) {
-    items = doc.items || [];
-    render();
-    renderPrint();
+    all = (doc.items || []).filter((it) => it.options && it.key);
+    renderFilters();
+    applyFilter();
   }
 
   fetch("/api/teacher-catalog").then((r) => {

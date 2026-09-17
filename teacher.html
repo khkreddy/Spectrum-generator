@@ -2,26 +2,29 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher pack · 9701 spectra</title>
+<title>Teacher pack · 9701 spectroscopy</title>
 <link rel="stylesheet" href="practice.css">
 <body>
 <header class="top no-print">
   <div>
     <h1>Teacher pack</h1>
-    <p class="sub">Select questions. The download is the paper plus an attached learn-by-solve answer key (correct letter, hinge solve, and a follow-up for every wrong option). mx types stay on the key, never on the learner paper.</p>
+    <p class="sub">Filter by technique, select questions, print the original stems and figures with A–D. The attached key is learn-by-solve: hinge, mx pathway per wrong option, follow-up item. mx types stay on the key.</p>
   </div>
   <nav>
-    <a href="hub.html">Home</a>
+    <a href="index.html">Home</a>
     <a href="student.html">Student</a>
     <a href="teacher.html" class="on">Teacher</a>
     <a href="generate.html">Generator</a>
   </nav>
 </header>
 <div class="wrap no-print">
-  <p>
-    <button class="ghost" type="button" id="all">Select MCQ</button>
+  <div id="filters"></div>
+  <p class="muted" id="nmr-note">NMR in this harvest is paper-4 structured work, not A–D, so that filter is empty.</p>
+  <p class="tools">
+    <span id="count" class="muted"></span>
+    <button class="ghost" type="button" id="all">Select visible</button>
     <button class="ghost" type="button" id="none">Clear</button>
-    <label><input type="checkbox" id="answers" checked> attach answer key</label>
+    <label class="inline"><input type="checkbox" id="answers" checked> attach answer key</label>
     <button class="act" type="button" id="dl">Download PDF</button>
     <button class="ghost" type="button" id="print">Print paper + key</button>
   </p>
@@ -30,6 +33,7 @@
 </div>
 <section id="print-paper"></section>
 <section id="print-key" class="print-key"></section>
+<script src="common.js"></script>
 <script src="teacher.js"></script>
 </body>
 </html>

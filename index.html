@@ -1,10 +1,67 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=hub.html">
-<title>Spectrum generator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>9701 spectroscopy · practice</title>
 <link rel="stylesheet" href="practice.css">
 <body>
-<p><a href="hub.html">9701 aliphatic spectra — open the hub</a></p>
+<header class="top">
+  <div>
+    <h1>9701 spectroscopy</h1>
+    <p class="sub">Cambridge International AS &amp; A Level Chemistry Paper 1 MCQs on infrared, mass spectrometry, and mixed techniques. The question you see is the original exam wording plus the original figure, not a redraw.</p>
+  </div>
+  <nav>
+    <a href="index.html" class="on">Home</a>
+    <a href="student.html">Student</a>
+    <a href="teacher.html">Teacher</a>
+    <a href="generate.html">Generator</a>
+  </nav>
+</header>
+<div class="wrap">
+  <section class="hero">
+    <p class="lede">Choose a technique, or a mixed set. Answer A–D. A wrong option opens a smaller question aimed at that mistake. The key is a lookup, not a chatbot.</p>
+    <p class="stats" id="stats">Loading counts…</p>
+  </section>
+  <div class="cards">
+    <a class="card" href="student.html">
+      <h2>Student practice</h2>
+      <p class="muted">Original stem, original figure, selectable A–D. Filter infrared / MS / combined. Shuffle a mixed set. Wrong answers route to a follow-up; the letter stays hidden until that follow-up is done.</p>
+    </a>
+    <a class="card" href="teacher.html">
+      <h2>Teacher pack</h2>
+      <p class="muted">The same filters. Print the paper as students see it. The answer key attaches the hinge solve, the misconception pathway for each wrong letter, and the follow-up item.</p>
+    </a>
+    <a class="card" href="generate.html">
+      <h2>Canonical generator</h2>
+      <p class="muted">Type an aliphatic name or SMILES. The IR envelope is the 9701 exam-paper class plus experimental diagnostic bands. Open-chain aliphatic only.</p>
+    </a>
+  </div>
+  <section class="how">
+    <h2>How a question is shown</h2>
+    <ol>
+      <li>The <strong>original stem</strong> — including the data-booklet table when the paper printed one.</li>
+      <li>The <strong>original figure</strong>, stored as PNG / base64 from the exam crop, not a TikZ impersonation of the question.</li>
+      <li><strong>A B C D</strong> as buttons. Figure-only options (four plotted spectra) are letter buttons only.</li>
+    </ol>
+    <h2>Learn-by-solve</h2>
+    <p>Follow-ups are authored offline (Astra harness, schema-checked) and served as JSON. The student never sees the misconception type. Runtime does not call a model.</p>
+    <p class="muted">NMR items in this harvest are paper-4 structured responses, not multiple choice, so they are not in the practice set. Paper-4 free response is out of scope here.</p>
+  </section>
+</div>
+<script>
+fetch("pack.json").then(r => r.json()).then(doc => {
+  const t = doc.techniques || {};
+  const el = document.getElementById("stats");
+  el.innerHTML =
+    "<b>" + (doc.n_mcq || doc.n || 0) + "</b> MCQs · " +
+    "<b>" + (t.ir || 0) + "</b> infrared · " +
+    "<b>" + (t.ms || 0) + "</b> mass spectrometry · " +
+    "<b>" + (t.mixed || 0) + "</b> combined · " +
+    "<b>" + (t.nmr || 0) + "</b> NMR · " +
+    "<b>" + (doc.n_lbs || 0) + "</b> with learn-by-solve";
+}).catch(() => {
+  document.getElementById("stats").textContent = "";
+});
+</script>
 </body>
 </html>
