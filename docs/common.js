@@ -137,6 +137,28 @@
       (extra && extra !== t ? "<span class='meta'>" + esc(extra) + "</span>" : "");
   }
 
+  const SEASON = { m: "March", s: "June", w: "November" };
+  function paperParts(uid) {
+    const m = String(uid || "").match(/^9701_([msw])(\d{2})_qp_(\d+):q(\d+)$/i);
+    if (!m) return null;
+    return {
+      season: SEASON[m[1].toLowerCase()] || m[1],
+      year: 2000 + parseInt(m[2], 10),
+      paper: m[3],
+      q: m[4],
+    };
+  }
+  function paperLabel(uid) {
+    const p = paperParts(uid);
+    if (!p) return uid || "";
+    return p.season + " " + p.year + " paper " + p.paper + ", question " + p.q;
+  }
+  function paperShort(uid) {
+    const p = paperParts(uid);
+    if (!p) return uid || "";
+    return p.season + " " + p.year + " · Q" + p.q;
+  }
+
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -155,7 +177,7 @@
       return "<div class='opt-line'><b>" + k + "</b> " + chem(t) + "</div>";
     }).join("");
     const num = n != null ? (n + 1) + ". " : "";
-    return "<article class='paper print-q'><div class='uid'>" + num + esc(it.uid) +
+    return "<article class='paper print-q'><div class='uid'>" + num + esc(paperLabel(it.uid)) +
       " " + techBadge(it) + "</div>" +
       (showsStem(it) ? stemHtml(it.stem) : "") + img +
       "<ul class='opts print-opts'>" + opts + "</ul></article>";
@@ -164,6 +186,6 @@
   global.SpectraUI = {
     LETTERS, TECH, esc, chem, techniqueOf, counts, selectedSet, filterItems,
     filterBar, stemHtml, figureHtml, optionList, techBadge, shuffle, paperArticle,
-    showsFigure, showsStem, letterSelect,
+    showsFigure, showsStem, letterSelect, paperLabel, paperShort,
   };
 })(window);

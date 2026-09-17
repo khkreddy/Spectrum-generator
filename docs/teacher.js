@@ -22,10 +22,10 @@
 
   function render() {
     $("tbl").innerHTML =
-      "<tr><th></th><th>uid</th><th>technique</th><th>key</th><th>LBS</th><th>figure</th><th>examiner</th></tr>" +
+      "<tr><th></th><th>paper</th><th>technique</th><th>key</th><th>LBS</th><th>figure</th><th>examiner</th></tr>" +
       items.map((it, i) =>
         "<tr><td><input type='checkbox' data-i='" + i + "' checked></td>" +
-        "<td class='mono'>" + U.esc(it.uid) + "</td>" +
+        "<td>" + U.esc(U.paperLabel(it.uid)) + "</td>" +
         "<td>" + U.techBadge(it) + "</td>" +
         "<td>" + U.esc(it.key || "—") + "</td>" +
         "<td>" + (it.lbs || it.has_lbs ? "yes" : "") + "</td>" +
@@ -92,7 +92,7 @@
           (fu.stem ? "<br><i>Follow-up:</i> " + U.esc(fu.stem) + " (key " + U.esc(fu.key || "") + ")" : "") +
           "</li>";
       }).join("");
-      return "<article class='key-block'><h3>" + (n + 1) + ". " + U.esc(it.uid) + " → " + U.esc(it.key || "—") +
+      return "<article class='key-block'><h3>" + (n + 1) + ". " + U.esc(U.paperLabel(it.uid)) + " → " + U.esc(it.key || "—") +
         "</h3>" + U.stemHtml(it.stem) + U.figureHtml(it, "orig small") +
         "<p>" + U.esc(lbs.solve || "") + "</p><ul>" + rows + "</ul>" +
         (it.examiner_comment ? "<p class='comment'>" + U.esc(it.examiner_comment) + "</p>" : "") +

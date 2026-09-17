@@ -22,6 +22,8 @@ LBS_PATH = ROOT / "static" / "lbs.json"
 PORT = 8778
 
 sys.path.insert(0, str(SRC))
+sys.path.insert(0, str(ROOT))
+from display import paper_label  # noqa: E402
 from generate import generate  # noqa: E402
 from names import resolve  # noqa: E402
 from render_tikz import render_all  # noqa: E402
@@ -282,7 +284,7 @@ def _render_pdf(items: list[dict], include_answers: bool) -> bytes:
             fig = plt.figure(figsize=(8.27, 11.69), dpi=120)
             fig.patch.set_facecolor("white")
             fig.text(0.08, 0.96, "9701 spectroscopy  ·  teacher pack", fontsize=9, color="#555")
-            fig.text(0.08, 0.93, it["uid"], fontsize=11, fontweight="bold", fontfamily="monospace")
+            fig.text(0.08, 0.93, paper_label(it["uid"]), fontsize=11, fontweight="bold")
             show_fig = bool(it.get("show_figure"))
             show_stem = it.get("show_stem", not show_fig)
             letter_only = bool(it.get("letter_select") or it.get("options_are_figure"))
@@ -332,7 +334,7 @@ def _render_pdf(items: list[dict], include_answers: bool) -> bytes:
                     flush()
                 key = it.get("key") or "—"
                 lbs = LBS.get(it["uid"]) or {}
-                fig.text(0.08, y, f"{it['uid']}   {key}", fontsize=9, fontfamily="monospace", fontweight="bold")
+                fig.text(0.08, y, f"{paper_label(it['uid'])}   {key}", fontsize=9, fontweight="bold")
                 y -= 0.018
                 solve = (lbs.get("solve") or "").strip()
                 if solve:

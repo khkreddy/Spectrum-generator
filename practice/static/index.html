@@ -19,17 +19,17 @@
 </header>
 <div class="wrap">
   <section class="hero">
-    <p class="lede">Choose a technique, or a mixed set. Answer A–D. A wrong option opens a smaller question aimed at that mistake. The key is a lookup, not a chatbot.</p>
+    <p class="lede">Choose infrared, mass spectrometry, or a mixed set. Each question is the stem, any figure, and A–D.</p>
     <p class="stats" id="stats">Loading counts…</p>
   </section>
   <div class="cards">
     <a class="card" href="student.html">
       <h2>Student practice</h2>
-      <p class="muted">Text when the stem and A–D are complete. Figure only for a spectrum or option diagram — never both. A wrong letter opens a follow-up in the same box.</p>
+      <p class="muted">Work the questions. A wrong choice opens a related question underneath.</p>
     </a>
     <a class="card" href="teacher.html">
       <h2>Teacher pack</h2>
-      <p class="muted">The same filters. Print the paper as students see it. The answer key attaches the hinge solve, the misconception pathway for each wrong letter, and the follow-up item.</p>
+      <p class="muted">Print the same questions. The answer key includes a follow-up for each wrong option.</p>
     </a>
     <a class="card" href="generate.html">
       <h2>Canonical generator</h2>
@@ -39,13 +39,11 @@
   <section class="how">
     <h2>How a question is shown</h2>
     <ol>
-      <li>If stem and options are complete encoded text, that is the question. No scan of the same wording.</li>
-      <li>A <strong>figure</strong> (PNG / base64) is shown only when the paper has a spectrum or option diagram. Text that is already in that image is not repeated.</li>
-      <li>When A–D live in the figure, letter buttons select them. When A–D are encoded text, those texts are the selectable options.</li>
+      <li>Complete text is shown as text. A figure is shown only when the paper has a spectrum or option diagram.</li>
+      <li>Wording already in the figure is not repeated.</li>
+      <li>A question includes its four options. Scroll if it does not fit on one screen.</li>
     </ol>
-    <h2>Learn-by-solve</h2>
-    <p>Follow-ups are authored offline (Astra harness, schema-checked) and served as JSON. The student never sees the misconception type. Runtime does not call a model.</p>
-    <p class="muted">NMR items in this harvest are paper-4 structured responses, not multiple choice, so they are not in the practice set. Paper-4 free response is out of scope here.</p>
+    <p class="muted">There are no NMR multiple-choice questions in this set.</p>
   </section>
 </div>
 <script>

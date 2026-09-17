@@ -8,7 +8,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from display import learner_stem, presentation, technique  # noqa: E402
+from display import learner_stem, paper_label, paper_short, presentation, technique  # noqa: E402
 from extract_ms_keys import parse_ms_text, uid_to_ms_name  # noqa: E402
 from lbs_schema import validate_item  # noqa: E402
 
@@ -41,6 +41,10 @@ def main() -> int:
         fail("mixed technique")
     if technique(["nmr"]) != "nmr":
         fail("nmr technique")
+    if paper_label("9701_m19_qp_12:q30") != "March 2019 paper 12, question 30":
+        fail("paper_label " + paper_label("9701_m19_qp_12:q30"))
+    if paper_short("9701_s18_qp_11:q30") != "June 2018 · Q30":
+        fail("paper_short")
 
     text_q = presentation(
         visual_form="text_only",

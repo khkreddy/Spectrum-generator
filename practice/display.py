@@ -93,6 +93,29 @@ def technique(spectrum_types: list[str] | None) -> str:
     return "other"
 
 
+SEASON_NAME = {"m": "March", "s": "June", "w": "November"}
+UID_PAPER = re.compile(r"^9701_([msw])(\d{2})_qp_(\d+):q(\d+)$", re.I)
+
+
+def paper_label(uid: str) -> str:
+    """Front-end label, e.g. 'March 2019 paper 12, question 30'."""
+    m = UID_PAPER.match(uid or "")
+    if not m:
+        return uid or ""
+    season, yy, paper, qn = m.groups()
+    year = 2000 + int(yy)
+    return f"{SEASON_NAME[season.lower()]} {year} paper {paper}, question {qn}"
+
+
+def paper_short(uid: str) -> str:
+    m = UID_PAPER.match(uid or "")
+    if not m:
+        return uid or ""
+    season, yy, paper, qn = m.groups()
+    year = 2000 + int(yy)
+    return f"{SEASON_NAME[season.lower()]} {year} · Q{qn}"
+
+
 FIGURE_FORMS = {"spectrum_plot", "question_image_with_plot", "other_figure"}
 
 
