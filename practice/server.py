@@ -96,8 +96,12 @@ class Handler(SimpleHTTPRequestHandler):
                     "stem": it.get("stem") or "",
                     "options": it.get("options") or {},
                     "options_are_figure": bool(it.get("options_are_figure")),
-                    "original_base64": it.get("original_base64"),
-                    "original_url": it.get("original_url"),
+                    "show_figure": bool(it.get("show_figure")),
+                    "show_stem": it.get("show_stem", True),
+                    "show_option_text": it.get("show_option_text", True),
+                    "letter_select": bool(it.get("letter_select") or it.get("options_are_figure")),
+                    "original_base64": it.get("original_base64") if it.get("show_figure") else None,
+                    "original_url": it.get("original_url") if it.get("show_figure") else None,
                     "has_examiner_comment": bool(it.get("examiner_comment")),
                     "has_lbs": bool(it.get("has_lbs")),
                     "aliphatic_class": it.get("aliphatic_class"),
@@ -279,28 +283,33 @@ def _render_pdf(items: list[dict], include_answers: bool) -> bytes:
             fig.patch.set_facecolor("white")
             fig.text(0.08, 0.96, "9701 spectroscopy  ·  teacher pack", fontsize=9, color="#555")
             fig.text(0.08, 0.93, it["uid"], fontsize=11, fontweight="bold", fontfamily="monospace")
-            stem = _wrap(it.get("stem") or "", 95)
-            fig.text(0.08, 0.90, stem, fontsize=8.5, va="top", wrap=False, family="DejaVu Sans")
-            y = 0.90 - 0.012 * (stem.count("\n") + 2)
-            png = HARVEST_ITEMS / it["folder"] / "original.png"
+            show_fig = bool(it.get("show_figure"))
+            show_stem = it.get("show_stem", not show_fig)
+            letter_only = bool(it.get("letter_select") or it.get("options_are_figure"))
+            y = 0.90
+            if show_stem:
+                stem = _wrap(it.get("stem") or "", 95)
+                fig.text(0.08, y, stem, fontsize=8.5, va="top", wrap=False, family="DejaVu Sans")
+                y = y - 0.012 * (stem.count("\n") + 2)
             im = None
-            if png.is_file():
-                im = PILImage.open(png).convert("RGB")
-            elif it.get("original_base64"):
-                import base64 as _b64
-                blob = it["original_base64"].split(",", 1)[-1]
-                im = PILImage.open(io.BytesIO(_b64.b64decode(blob))).convert("RGB")
+            if show_fig:
+                png = HARVEST_ITEMS / it["folder"] / "original.png"
+                if png.is_file():
+                    im = PILImage.open(png).convert("RGB")
+                elif it.get("original_base64"):
+                    import base64 as _b64
+                    blob = it["original_base64"].split(",", 1)[-1]
+                    im = PILImage.open(io.BytesIO(_b64.b64decode(blob))).convert("RGB")
             if im is not None and y > 0.42:
                 ax = fig.add_axes([0.08, 0.34, 0.84, min(0.48, y - 0.38)])
                 ax.imshow(im)
                 ax.axis("off")
             opts = it.get("options") or {}
-            figure_opts = bool(it.get("options_are_figure"))
             oy = 0.30
             for lab in ("A", "B", "C", "D"):
                 if lab not in opts and lab not in (it.get("options_raw") or {}):
                     continue
-                text = "" if figure_opts else str(opts.get(lab) or "")
+                text = "" if letter_only else str(opts.get(lab) or "")
                 line = lab if not text else f"{lab}  {_wrap(text, 88).split(chr(10))[0][:110]}"
                 fig.text(0.08, oy, line, fontsize=9)
                 oy -= 0.025

@@ -93,12 +93,53 @@ def technique(spectrum_types: list[str] | None) -> str:
     return "other"
 
 
+FIGURE_FORMS = {"spectrum_plot", "question_image_with_plot", "other_figure"}
+
+
 def options_are_figure(options: dict[str, str]) -> bool:
     texts = [str(options.get(k) or "").strip() for k in ("A", "B", "C", "D")]
     nonempty = [t for t in texts if t]
     if len(nonempty) < 4:
         return False
     return all(FIGURE_OPT.match(t) for t in nonempty)
+
+
+def presentation(
+    *,
+    visual_form: str | None,
+    is_spectrum_plot: bool,
+    original_kind: str | None,
+    options: dict[str, str],
+    has_png: bool,
+) -> dict:
+    """How to put an item on screen without duplicating the printed paper.
+
+    Base64/PNG is a *figure* (spectrum or option diagrams). A scan of a fully
+    encoded text question is not shown. When the PNG is the printed question
+    (stem + plot + A–D), the image is the prompt; letters are the selectors.
+    """
+    fig_opts = options_are_figure(options)
+    form = (visual_form or "").strip()
+    kind = (original_kind or "").strip()
+    encoded_opts = all(str((options or {}).get(k) or "").strip() for k in ("A", "B", "C", "D")) and not fig_opts
+    text_scan = form == "text_only" or (
+        form == "spectral_table" and not is_spectrum_plot and kind not in {"question_clip", "pdf_page"}
+    )
+    show_figure = bool(has_png) and not text_scan and (
+        fig_opts
+        or bool(is_spectrum_plot)
+        or form in FIGURE_FORMS
+        or kind in {"question_clip", "pdf_page"}
+    )
+    prompt_in_figure = show_figure
+    letter_select = bool(fig_opts or prompt_in_figure)
+    return {
+        "show_figure": show_figure,
+        "prompt_in_figure": prompt_in_figure,
+        "letter_select": letter_select,
+        "show_stem": not prompt_in_figure,
+        "show_option_text": encoded_opts and not prompt_in_figure,
+    }
 
 
 def learner_options(options: dict[str, str]) -> dict[str, str]:

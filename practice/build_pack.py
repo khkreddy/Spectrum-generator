@@ -12,7 +12,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from display import learner_options, learner_stem, options_are_figure, technique  # noqa: E402
+from display import (  # noqa: E402
+    learner_options,
+    learner_stem,
+    options_are_figure,
+    presentation,
+    technique,
+)
 from lbs_followups import build as build_lbs  # noqa: E402
 from lbs_schema import LETTERS, validate_item  # noqa: E402
 
@@ -108,6 +114,12 @@ def main() -> int:
     if TEMPLATES.is_file():
         gold = json.loads(TEMPLATES.read_text(encoding="utf-8")).get("classes") or {}
     gold_uid = {rec.get("uid"): k for k, rec in gold.items()}
+    index_rows = {}
+    idx_path = HARVEST / "INDEX.json"
+    if idx_path.is_file():
+        for rec in json.loads(idx_path.read_text(encoding="utf-8")):
+            if rec.get("item_uid"):
+                index_rows[rec["item_uid"]] = rec
 
     items = []
     skipped = {"not_mcq": 0, "no_options": 0, "no_key": 0}
@@ -133,11 +145,24 @@ def main() -> int:
         if not key:
             skipped["no_key"] += 1
             continue
-        b64 = _b64(folder)
-        media = _copy_media(folder)
+        meta = index_rows.get(uid) or {}
+        png_exists = (HARVEST / "items" / folder / "original.png").is_file() or (
+            HARVEST / "items" / folder / "original.base64"
+        ).is_file()
+        pres = presentation(
+            visual_form=row.get("visual_form") or meta.get("visual_form"),
+            is_spectrum_plot=bool(row.get("is_spectrum_plot") or meta.get("is_spectrum_plot")),
+            original_kind=meta.get("original_kind"),
+            options=options,
+            has_png=png_exists,
+        )
+        b64 = _b64(folder) if pres["show_figure"] else None
+        media = _copy_media(folder) if pres["show_figure"] else None
         stem_raw = row.get("stem") or tw.get("stem") or ""
-        stem = learner_stem(stem_raw, options, uid, has_figure=bool(b64))
+        stem = learner_stem(stem_raw, options, uid, has_figure=pres["show_figure"])
         disp_opts = learner_options(options)
+        if not pres["show_option_text"]:
+            disp_opts = {k: "" for k in LETTERS}
         lbs = (lbs_doc.get("items") or {}).get(uid)
         if lbs is not None:
             lbs["key"] = key
@@ -155,17 +180,23 @@ def main() -> int:
                 "item_type": item_type,
                 "visual_form": row.get("visual_form"),
                 "is_spectrum_plot": bool(row.get("is_spectrum_plot")),
+                "original_kind": meta.get("original_kind"),
                 "stem": stem,
                 "stem_raw": stem_raw,
                 "options": disp_opts,
                 "options_raw": options,
                 "options_are_figure": options_are_figure(options),
+                "show_figure": pres["show_figure"],
+                "show_stem": pres["show_stem"],
+                "show_option_text": pres["show_option_text"],
+                "letter_select": pres["letter_select"],
+                "prompt_in_figure": pres["prompt_in_figure"],
                 "key": key,
                 "key_source": "ttwin" if a.get("mcq_key") else "mark_scheme",
                 "examiner_comment": comm.get("text") if comm.get("present") else None,
                 "has_original": bool(b64),
                 "original_base64": b64,
-                "original_url": media or (f"media/{folder}/original.png" if b64 else None),
+                "original_url": media,
                 "aliphatic_class": gold_uid.get(uid),
                 "complete_exam": bool(tw.get("complete_exam")),
                 "has_lbs": bool(lbs),

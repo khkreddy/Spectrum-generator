@@ -29,7 +29,7 @@
         "<td>" + U.techBadge(it) + "</td>" +
         "<td>" + U.esc(it.key || "—") + "</td>" +
         "<td>" + (it.lbs || it.has_lbs ? "yes" : "") + "</td>" +
-        "<td>" + (it.original_base64 || it.original_url ? "yes" : "") + "</td>" +
+        "<td>" + (it.show_figure || it.original_base64 || it.original_url ? "yes" : "") + "</td>" +
         "<td>" + (it.examiner_comment ? "yes" : "") + "</td></tr>"
       ).join("");
   }

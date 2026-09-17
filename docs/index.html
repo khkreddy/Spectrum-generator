@@ -8,7 +8,7 @@
 <header class="top">
   <div>
     <h1>9701 spectroscopy</h1>
-    <p class="sub">Cambridge International AS &amp; A Level Chemistry Paper 1 MCQs on infrared, mass spectrometry, and mixed techniques. The question you see is the original exam wording plus the original figure, not a redraw.</p>
+    <p class="sub">Cambridge International AS &amp; A Level Chemistry Paper 1 MCQs on infrared, mass spectrometry, and mixed techniques. Complete text is shown as text. A base64 figure is shown only when the paper has a spectrum or option diagram.</p>
   </div>
   <nav>
     <a href="index.html" class="on">Home</a>
@@ -25,7 +25,7 @@
   <div class="cards">
     <a class="card" href="student.html">
       <h2>Student practice</h2>
-      <p class="muted">Original stem, original figure, selectable A–D. Filter infrared / MS / combined. Shuffle a mixed set. Wrong answers route to a follow-up; the letter stays hidden until that follow-up is done.</p>
+      <p class="muted">Text when the stem and A–D are complete. Figure only for a spectrum or option diagram — never both. A wrong letter opens a follow-up in the same box.</p>
     </a>
     <a class="card" href="teacher.html">
       <h2>Teacher pack</h2>
@@ -39,9 +39,9 @@
   <section class="how">
     <h2>How a question is shown</h2>
     <ol>
-      <li>The <strong>original stem</strong> — including the data-booklet table when the paper printed one.</li>
-      <li>The <strong>original figure</strong>, stored as PNG / base64 from the exam crop, not a TikZ impersonation of the question.</li>
-      <li><strong>A B C D</strong> as buttons. Figure-only options (four plotted spectra) are letter buttons only.</li>
+      <li>If stem and options are complete encoded text, that is the question. No scan of the same wording.</li>
+      <li>A <strong>figure</strong> (PNG / base64) is shown only when the paper has a spectrum or option diagram. Text that is already in that image is not repeated.</li>
+      <li>When A–D live in the figure, letter buttons select them. When A–D are encoded text, those texts are the selectable options.</li>
     </ol>
     <h2>Learn-by-solve</h2>
     <p>Follow-ups are authored offline (Astra harness, schema-checked) and served as JSON. The student never sees the misconception type. Runtime does not call a model.</p>
