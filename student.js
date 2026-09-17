@@ -34,9 +34,9 @@
   function renderList() {
     $("list").innerHTML = S.items.map((it) =>
       "<button type='button' data-uid='" + U.esc(it.uid) + "' class='" + (it.uid === S.uid ? "on" : "") + "'>" +
-      "<div class='uid'>" + U.esc(it.uid) + "</div>" +
+      "<div class='name'>" + U.esc(U.paperShort(it.uid)) + "</div>" +
       "<div class='meta'>" + U.techBadge(it) + "</div></button>"
-    ).join("") || "<p class='muted pad'>No questions in this selection. Turn on Infrared, mass spectrometry, or combined techniques.</p>";
+    ).join("") || "<p class='muted pad'>No questions match this filter.</p>";
     $("list").onclick = (e) => {
       const b = e.target.closest("button[data-uid]");
       if (!b) return;
@@ -53,23 +53,23 @@
     const it = current();
     const el = $("paper");
     if (!it) {
-      el.innerHTML = "<p class='muted'>No MCQ in this filter. NMR items in this harvest are paper-4 structured responses, not A–D.</p>";
+      el.innerHTML = "<p class='muted'>No questions in this filter.</p>";
       return;
     }
     const letters = U.letterSelect(it);
     el.innerHTML =
-      "<div class='q-main' id='q-main'>" +
-        "<div class='uid'>" + U.esc(it.uid) + " " + U.techBadge(it) + "</div>" +
-        (U.showsStem(it) ? U.stemHtml(it.stem) : "") +
-        U.figureHtml(it) +
-      "</div>" +
-      "<div class='q-interact' id='q-interact'>" +
-        "<ul class='opts" + (letters ? " letters" : "") + "' id='opts'>" +
-          U.optionList(it.options, letters, "opt") +
-        "</ul>" +
+      "<div class='q-scroll' id='q-scroll'>" +
+        "<div class='uid'>" + U.esc(U.paperLabel(it.uid)) + " " + U.techBadge(it) + "</div>" +
+        "<div class='q-body'>" +
+          (U.showsStem(it) ? U.stemHtml(it.stem) : "") +
+          U.figureHtml(it) +
+          "<ul class='opts" + (letters ? " letters" : "") + "' id='opts'>" +
+            U.optionList(it.options, letters, "opt") +
+          "</ul>" +
+        "</div>" +
         "<p class='actions'>" +
           "<button class='act' type='button' id='check'>Check</button> " +
-          "<button class='ghost' type='button' id='print-one'>Print this question</button>" +
+          "<button class='ghost' type='button' id='print-one'>Print</button>" +
         "</p>" +
         "<p class='err' id='msg'></p>" +
         "<div id='dock'></div>" +
@@ -127,7 +127,7 @@
     const it = current();
     const choice = picked("opt");
     const msg = $("msg");
-    if (!choice) { msg.textContent = "Choose A, B, C or D."; return; }
+    if (!choice) { msg.textContent = "Select A, B, C or D."; return; }
     const j = await postGrade({ uid: it.uid, choice: choice, stage: "item" });
     if (j.error) { msg.textContent = j.error; return; }
     document.querySelectorAll("#opts label").forEach((lab) => {
@@ -141,8 +141,8 @@
       msg.className = "okmsg";
       msg.textContent = "Correct.";
       let fb = "";
-      if (j.solve) fb += "<h3>How to see it</h3><div class='comment'>" + U.esc(j.solve) + "</div>";
-      if (j.examiner_comment) fb += "<h3>Examiner comment</h3><div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
+      if (j.solve) fb += "<div class='comment'>" + U.esc(j.solve) + "</div>";
+      if (j.examiner_comment) fb += "<div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
       setDock(fb);
       return;
     }
@@ -150,16 +150,15 @@
       S.mode = "followup";
       S.fromChoice = j.from_choice;
       S.followup = j.followup;
-      document.querySelectorAll("#opts input").forEach((inp) => { inp.disabled = true; });
+      msg.textContent = "";
       msg.className = "err";
-      msg.textContent = "Not " + choice + ". A smaller question is below — the original stays in view.";
       const fu = j.followup;
       setDock(
         "<div class='hint-box'>" +
-          "<p class='prompt'>Think about this first:</p>" +
+          "<p class='prompt'>A related question</p>" +
           U.stemHtml(fu.stem) +
           "<ul class='opts' id='fu-opts'>" + U.optionList(fu.options, false, "fu") + "</ul>" +
-          "<p class='actions'><button class='act' type='button' id='check-fu'>Check follow-up</button></p>" +
+          "<p class='actions'><button class='act' type='button' id='check-fu'>Check</button></p>" +
           "<p class='err' id='fu-msg'></p>" +
           "<div id='fu-fb'></div>" +
         "</div>"
@@ -168,14 +167,14 @@
       return;
     }
     msg.className = "err";
-    msg.textContent = "Not " + choice + ".";
+    msg.textContent = "That is not the answer.";
   }
 
   async function gradeFollowup() {
     const it = current();
     const choice = picked("fu");
     const msg = $("fu-msg") || $("msg");
-    if (!choice) { msg.textContent = "Choose A, B, C or D."; return; }
+    if (!choice) { msg.textContent = "Select A, B, C or D."; return; }
     const j = await postGrade({
       uid: it.uid, choice: choice, stage: "followup", from_choice: S.fromChoice,
     });
@@ -186,14 +185,12 @@
       li.classList.toggle("bad", v === j.choice && !j.ok);
     });
     msg.className = j.ok ? "okmsg" : "err";
-    msg.textContent = j.ok
-      ? "Yes. The original key is below."
-      : "Not quite. The follow-up key is " + j.correct + ".";
+    msg.textContent = j.ok ? "Yes." : "The answer is " + j.correct + ".";
     let fb = "";
     if (j.why) fb += "<div class='comment'>" + U.esc(j.why) + "</div>";
-    fb += "<p class='prompt'>Original question: the key is <b>" + U.esc(j.original_key) + "</b>.</p>";
-    if (j.solve) fb += "<h3>How to see it</h3><div class='comment'>" + U.esc(j.solve) + "</div>";
-    if (j.examiner_comment) fb += "<h3>Examiner comment</h3><div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
+    fb += "<p class='prompt'>This question's answer is " + U.esc(j.original_key) + ".</p>";
+    if (j.solve) fb += "<div class='comment'>" + U.esc(j.solve) + "</div>";
+    if (j.examiner_comment) fb += "<div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
     const box = $("fu-fb");
     if (box) box.innerHTML = fb;
   }
