@@ -93,20 +93,35 @@
     }).join("");
   }
 
-  function figureHtml(it, cls) {
-    const src = it.original_base64 || it.original_url;
-    if (!src) return "";
-    return "<img class='" + (cls || "orig") + "' src='" + src + "' alt='Original exam figure'>";
+  function showsFigure(it) {
+    if (it.show_figure === false) return false;
+    if (it.show_figure === true) return true;
+    return !!(it.original_base64 || it.original_url);
+  }
+  function showsStem(it) {
+    if (it.show_stem === false) return false;
+    return true;
+  }
+  function letterSelect(it) {
+    return !!(it.letter_select || it.options_are_figure || it.prompt_in_figure);
   }
 
-  function optionList(options, figure) {
+  function figureHtml(it, cls) {
+    if (!showsFigure(it)) return "";
+    const src = it.original_base64 || it.original_url;
+    if (!src) return "";
+    return "<img class='" + (cls || "orig") + "' src='" + src + "' alt='Exam figure'>";
+  }
+
+  function optionList(options, figure, name) {
+    const nm = name || "opt";
     return LETTERS.map((k) => {
       if (!(options && Object.prototype.hasOwnProperty.call(options, k)) && !figure) return "";
-      const text = (options && options[k]) || "";
+      const text = figure ? "" : ((options && options[k]) || "");
       const body = text ? "<span class='opt-text'>" + chem(text) + "</span>" : "";
       return (
         "<li><label class='opt" + (figure || !text ? " letter-only" : "") + "'>" +
-        "<input type='radio' name='opt' value='" + k + "'>" +
+        "<input type='radio' name='" + nm + "' value='" + k + "'>" +
         "<span class='letter'>" + k + "</span>" + body +
         "</label></li>"
       );
@@ -133,19 +148,22 @@
 
   function paperArticle(it, n) {
     const img = figureHtml(it);
+    const letters = letterSelect(it);
     const opts = LETTERS.map((k) => {
-      const t = (it.options || {})[k] || "";
-      if (it.options_are_figure || !t) return "<div class='opt-line'><b>" + k + "</b></div>";
+      const t = letters ? "" : ((it.options || {})[k] || "");
+      if (!t) return "<div class='opt-line'><b>" + k + "</b></div>";
       return "<div class='opt-line'><b>" + k + "</b> " + chem(t) + "</div>";
     }).join("");
     const num = n != null ? (n + 1) + ". " : "";
     return "<article class='paper print-q'><div class='uid'>" + num + esc(it.uid) +
-      " " + techBadge(it) + "</div>" + stemHtml(it.stem) + img +
+      " " + techBadge(it) + "</div>" +
+      (showsStem(it) ? stemHtml(it.stem) : "") + img +
       "<ul class='opts print-opts'>" + opts + "</ul></article>";
   }
 
   global.SpectraUI = {
     LETTERS, TECH, esc, chem, techniqueOf, counts, selectedSet, filterItems,
     filterBar, stemHtml, figureHtml, optionList, techBadge, shuffle, paperArticle,
+    showsFigure, showsStem, letterSelect,
   };
 })(window);

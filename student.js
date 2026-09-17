@@ -6,7 +6,6 @@
   };
 
   function $(id) { return document.getElementById(id); }
-
   function current() { return S.items.find((x) => x.uid === S.uid); }
 
   function applyFilter() {
@@ -54,35 +53,34 @@
     const it = current();
     const el = $("paper");
     if (!it) {
-      el.innerHTML = "<p class='muted'>No MCQ in this filter. NMR items in the harvest are paper-4 structured responses, not A–D.</p>";
+      el.innerHTML = "<p class='muted'>No MCQ in this filter. NMR items in this harvest are paper-4 structured responses, not A–D.</p>";
       return;
     }
-    if (S.mode === "followup" && S.followup) {
-      const fu = S.followup;
-      el.innerHTML =
-        "<div class='uid'>" + U.esc(it.uid) + " · follow-up</div>" +
-        "<p class='prompt'>Not that option. Think about this first:</p>" +
-        U.stemHtml(fu.stem) +
-        "<ul class='opts' id='opts'>" + U.optionList(fu.options, false) + "</ul>" +
-        "<p class='actions'><button class='act' type='button' id='check'>Check follow-up</button></p>" +
-        "<p class='err' id='msg'></p>" +
-        "<div id='feedback'></div>";
-      $("check").onclick = gradeFollowup;
-      return;
-    }
+    const letters = U.letterSelect(it);
     el.innerHTML =
-      "<div class='uid'>" + U.esc(it.uid) + " " + U.techBadge(it) + "</div>" +
-      U.stemHtml(it.stem) +
-      U.figureHtml(it) +
-      "<ul class='opts' id='opts'>" + U.optionList(it.options, it.options_are_figure) + "</ul>" +
-      "<p class='actions'>" +
-      "<button class='act' type='button' id='check'>Check</button> " +
-      "<button class='ghost' type='button' id='print-one'>Print this question</button>" +
-      "</p>" +
-      "<p class='err' id='msg'></p>" +
-      "<div id='feedback'></div>";
+      "<div class='q-main' id='q-main'>" +
+        "<div class='uid'>" + U.esc(it.uid) + " " + U.techBadge(it) + "</div>" +
+        (U.showsStem(it) ? U.stemHtml(it.stem) : "") +
+        U.figureHtml(it) +
+      "</div>" +
+      "<div class='q-interact' id='q-interact'>" +
+        "<ul class='opts" + (letters ? " letters" : "") + "' id='opts'>" +
+          U.optionList(it.options, letters, "opt") +
+        "</ul>" +
+        "<p class='actions'>" +
+          "<button class='act' type='button' id='check'>Check</button> " +
+          "<button class='ghost' type='button' id='print-one'>Print this question</button>" +
+        "</p>" +
+        "<p class='err' id='msg'></p>" +
+        "<div id='dock'></div>" +
+      "</div>";
     $("check").onclick = grade;
     $("print-one").onclick = () => window.print();
+  }
+
+  function setDock(html) {
+    const dock = $("dock");
+    if (dock) dock.innerHTML = html || "";
   }
 
   async function postGrade(payload) {
@@ -120,15 +118,20 @@
     return { ok: false, followup: row.followup, from_choice: payload.choice, stage: "item" };
   }
 
+  function picked(name) {
+    const el = document.querySelector("input[name='" + (name || "opt") + "']:checked");
+    return el ? el.value : null;
+  }
+
   async function grade() {
     const it = current();
-    const picked = document.querySelector("input[name=opt]:checked");
+    const choice = picked("opt");
     const msg = $("msg");
-    if (!picked) { msg.textContent = "Choose A, B, C or D."; return; }
-    const j = await postGrade({ uid: it.uid, choice: picked.value, stage: "item" });
+    if (!choice) { msg.textContent = "Choose A, B, C or D."; return; }
+    const j = await postGrade({ uid: it.uid, choice: choice, stage: "item" });
     if (j.error) { msg.textContent = j.error; return; }
     document.querySelectorAll("#opts label").forEach((lab) => {
-      lab.classList.toggle("pick", lab.querySelector("input").value === picked.value);
+      lab.classList.toggle("pick", lab.querySelector("input").value === choice);
     });
     if (j.ok) {
       document.querySelectorAll("#opts li").forEach((li) => {
@@ -140,60 +143,73 @@
       let fb = "";
       if (j.solve) fb += "<h3>How to see it</h3><div class='comment'>" + U.esc(j.solve) + "</div>";
       if (j.examiner_comment) fb += "<h3>Examiner comment</h3><div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
-      $("feedback").innerHTML = fb;
+      setDock(fb);
       return;
     }
     if (j.followup) {
       S.mode = "followup";
       S.fromChoice = j.from_choice;
       S.followup = j.followup;
-      renderPaper();
+      document.querySelectorAll("#opts input").forEach((inp) => { inp.disabled = true; });
+      msg.className = "err";
+      msg.textContent = "Not " + choice + ". A smaller question is below — the original stays in view.";
+      const fu = j.followup;
+      setDock(
+        "<div class='hint-box'>" +
+          "<p class='prompt'>Think about this first:</p>" +
+          U.stemHtml(fu.stem) +
+          "<ul class='opts' id='fu-opts'>" + U.optionList(fu.options, false, "fu") + "</ul>" +
+          "<p class='actions'><button class='act' type='button' id='check-fu'>Check follow-up</button></p>" +
+          "<p class='err' id='fu-msg'></p>" +
+          "<div id='fu-fb'></div>" +
+        "</div>"
+      );
+      $("check-fu").onclick = gradeFollowup;
       return;
     }
     msg.className = "err";
-    msg.textContent = "Not " + picked.value + ".";
+    msg.textContent = "Not " + choice + ".";
   }
 
   async function gradeFollowup() {
     const it = current();
-    const picked = document.querySelector("input[name=opt]:checked");
-    const msg = $("msg");
-    if (!picked) { msg.textContent = "Choose A, B, C or D."; return; }
+    const choice = picked("fu");
+    const msg = $("fu-msg") || $("msg");
+    if (!choice) { msg.textContent = "Choose A, B, C or D."; return; }
     const j = await postGrade({
-      uid: it.uid, choice: picked.value, stage: "followup", from_choice: S.fromChoice,
+      uid: it.uid, choice: choice, stage: "followup", from_choice: S.fromChoice,
     });
     if (j.error) { msg.textContent = j.error; return; }
-    document.querySelectorAll("#opts li").forEach((li) => {
+    document.querySelectorAll("#fu-opts li").forEach((li) => {
       const v = li.querySelector("input").value;
       li.classList.toggle("ok", v === j.correct);
       li.classList.toggle("bad", v === j.choice && !j.ok);
     });
     msg.className = j.ok ? "okmsg" : "err";
     msg.textContent = j.ok
-      ? "Yes. Now return to the original question."
+      ? "Yes. The original key is below."
       : "Not quite. The follow-up key is " + j.correct + ".";
     let fb = "";
     if (j.why) fb += "<div class='comment'>" + U.esc(j.why) + "</div>";
     fb += "<p class='prompt'>Original question: the key is <b>" + U.esc(j.original_key) + "</b>.</p>";
     if (j.solve) fb += "<h3>How to see it</h3><div class='comment'>" + U.esc(j.solve) + "</div>";
     if (j.examiner_comment) fb += "<h3>Examiner comment</h3><div class='comment'>" + U.esc(j.examiner_comment) + "</div>";
-    fb += "<p><button class='ghost' type='button' id='back'>Back to question</button></p>";
-    $("feedback").innerHTML = fb;
-    $("back").onclick = () => {
-      S.mode = "item";
-      S.followup = null;
-      renderPaper();
-    };
+    const box = $("fu-fb");
+    if (box) box.innerHTML = fb;
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.target && /input|textarea|select/i.test(e.target.tagName) && e.target.type !== "radio" && e.target.type !== "checkbox") return;
+    if (e.target && /textarea/i.test(e.target.tagName)) return;
     const k = e.key.toUpperCase();
     if (U.LETTERS.indexOf(k) >= 0) {
-      const radio = document.querySelector("input[name=opt][value='" + k + "']");
-      if (radio) { radio.checked = true; e.preventDefault(); }
+      const name = S.mode === "followup" ? "fu" : "opt";
+      const radio = document.querySelector("input[name='" + name + "'][value='" + k + "']");
+      if (radio && !radio.disabled) {
+        radio.checked = true;
+        e.preventDefault();
+      }
     } else if (e.key === "Enter") {
-      const btn = $("check");
+      const btn = S.mode === "followup" ? $("check-fu") : $("check");
       if (btn) { btn.click(); e.preventDefault(); }
     }
   });
@@ -227,8 +243,13 @@
           stem: it.stem,
           options: it.options,
           options_are_figure: it.options_are_figure,
-          original_base64: it.original_base64,
-          original_url: it.original_url,
+          show_figure: it.show_figure,
+          show_stem: it.show_stem,
+          show_option_text: it.show_option_text,
+          letter_select: it.letter_select,
+          prompt_in_figure: it.prompt_in_figure,
+          original_base64: it.show_figure === false ? null : it.original_base64,
+          original_url: it.show_figure === false ? null : it.original_url,
           has_examiner_comment: !!it.examiner_comment,
           has_lbs: it.has_lbs,
         })),
