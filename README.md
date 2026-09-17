@@ -1,48 +1,22 @@
-# Spectrum generator
+# 9701 spectroscopy
 
-Aliphatic acyclic IR generator plus a 9701 practice pair (student / teacher).
+Cambridge International AS & A Level Chemistry **Paper 1 MCQs** on infrared, mass spectrometry, and combined techniques, plus an aliphatic IR generator.
 
-Exam-paper TikZ still sets the **visual grain**. Experimental SDBS liquid-film spectra supply **diagnostic peak positions, shapes and ranges** the papers simplified away.
+The question a student or teacher sees is the **original exam wording** (including the printed data-booklet table) and the **original figure** (PNG stored as base64). A–D are selectable buttons. That is the paper, not a TikZ impersonation of the paper.
 
-## Propan-1-ol vs propan-2-ol
+## Practice
 
-The generator does not look up a stored trace per name. RDKit flags pick a class template:
+| | |
+|---|---|
+| Student | Filter IR / MS / combined / mixed set. Answer A–D. A wrong letter opens a smaller follow-up aimed at that mistake. |
+| Teacher | The same filters. Print the paper as students see it. The key attaches hinge solve, misconception pathway, follow-up. |
+| Generator | Open-chain aliphatic SMILES → exam-class IR. |
 
-| molecule | SMILES | SMARTS | template |
-|---|---|---|---|
-| propan-1-ol | `CCCO` | `[CH2][OX2H]` | `primary_alcohol` |
-| propan-2-ol | `CC(C)O` | `[CH1]([#6])[OX2H]` and not primary | `secondary_alcohol` |
+NMR items in this harvest are paper-4 structured responses, not A–D, so the NMR filter is empty on purpose.
 
-Diagnostic overlay from the experimental aliphatic corpus:
+Learn-by-solve records are authored **offline**. The Astra harness (`src/ask_astra_lbs.py`) writes schema-checked JSON; the browser looks that JSON up. Runtime does not call a model. Misconception types stay on the teacher key.
 
-| band | 1° alcohol | 2° alcohol |
-|---|---|---|
-| O–H | 3200–3550, broad | 3200–3550, broad |
-| CH₂ scissor | **1440–1475**, rounded (exam gold of 9701_s18_qp_11:q30 sat at T≈83 / baseline; Luna 1-propanol T(1465)≈26) | present |
-| CH₃ bend / isopropyl | 1360–1390, moderate | **1360–1390, strong** |
-| C–O | **1000–1085** (1°) | **1085–1160** (2°; exam gold sat at baseline near 1130; overlay restores T≈9) |
-
-So a generated propan-1-ol now shows the ~1450 cm⁻¹ CH₂ band. Propan-2-ol is the other template: deeper ~1375 cm⁻¹ isopropyl and 2° C–O ~1130 cm⁻¹, without a 1° C–O near 1050 cm⁻¹.
-
-## Experimental peak catalog
-
-`src/extract_aliphatic_experimental.py` walks every aliphatic acyclic system in the SDBS inventory (aromatics and rings excluded).
-
-- Preferred source: Luna TikZ encodings of the liquid-film GIFs (trough, FWHM, shape).
-- Otherwise: digitised `curve_ds` with the same trough finder.
-- GIF **minima lists are not used** — they mark the 3850 cm⁻¹ y-axis as O–H.
-
-Output: `data/rules/aliphatic_experimental_peaks.json` (235 molecules, 20 families, overlay bands the exam envelope omitted).
-
-## Practice apps
-
-Student and teacher papers render the **original exam crop as base64**, not a TikZ redraw of the question.
-
-- Student: A–D are highlighted once in the selection row. They are **not** repeated in the stem. Figure-only options (four plotted spectra) are letter buttons only.
-- Wrong A–D opens a **precomputed learn-by-solve follow-up** for that option’s V2 mx pathway (`term_substitution`, `condition_omission`, `relationship_reversal`, `scope_error`, `surface_feature_capture`, `mechanism_conflation`, `operation_confusion`). Runtime is a JSON lookup. The mx type is **not** shown to the student.
-- Teacher PDF = question paper + attached answer key (hinge solve, mx pathway per wrong option, follow-up item and its key).
-
-43 MCQs × 3 wrong options = 129 follow-ups in `practice/static/lbs.json`.
+Mark-scheme letters come from the published Paper 1 PDFs (`practice/extract_ms_keys.py`), cross-checked against the TTwin keys already on disk. Items without a key are not served.
 
 ## Run locally
 
@@ -54,8 +28,22 @@ PYTHONPATH=src .venv/bin/python practice/server.py
 # http://127.0.0.1:8778/
 ```
 
-Generator is aliphatic **acyclic** only (no rings, no aromatics).
+Rebuild the MCQ pack (needs the harvest tree and mark-scheme PDFs):
+
+```bash
+PYTHONPATH=src .venv/bin/python practice/extract_ms_keys.py
+PYTHONPATH=src .venv/bin/python practice/build_pack.py
+PYTHONPATH=src .venv/bin/python practice/test_practice.py
+```
+
+Author follow-ups for any new keyed MCQ:
+
+```bash
+PYTHONPATH=src .venv/bin/python src/ask_astra_lbs.py --missing
+```
 
 ## GitHub Pages
 
 `docs/` is the static student / teacher / example-generator site. Arbitrary SMILES still need the Python server.
+
+Generator is aliphatic **acyclic** only (no rings, no aromatics).

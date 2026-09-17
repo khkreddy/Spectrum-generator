@@ -68,14 +68,29 @@ def strip_ir_table(stem: str) -> str:
 
 
 def learner_stem(stem: str, options: dict[str, str], uid: str, has_figure: bool) -> str:
+    """Original exam wording for display.
+
+    Keeps data-booklet tables (they are part of the printed stem). Strips only
+    the leading question number, [Graph: …] placeholders (the PNG is shown),
+    and a duplicated A–D dump when options are rendered as buttons.
+    `has_figure` is accepted for call-site compatibility; it does not drop tables.
+    """
+    del has_figure
     s = strip_qnum(stem or "", uid)
     s = GRAPH.sub("", s)
-    if has_figure:
-        s = strip_ir_table(s)
     s = strip_inline_options(s, options or {})
     s = re.sub(r"\n{3,}", "\n\n", s).strip()
     s = re.sub(r"[ \t]+\n", "\n", s)
     return s
+
+
+def technique(spectrum_types: list[str] | None) -> str:
+    types = [t.lower() for t in (spectrum_types or []) if t]
+    if len(types) > 1:
+        return "mixed"
+    if types:
+        return types[0]
+    return "other"
 
 
 def options_are_figure(options: dict[str, str]) -> bool:

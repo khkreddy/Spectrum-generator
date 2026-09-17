@@ -13,3 +13,5 @@ data/*Zone.Identifier
 OpenAI*
 *.pdf
 review/static/compare/
+practice/static/ms_keys.json
+practice/static/media/

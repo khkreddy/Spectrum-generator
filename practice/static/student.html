@@ -2,27 +2,39 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Student practice · 9701 spectra</title>
+<title>Student practice · 9701 spectroscopy</title>
 <link rel="stylesheet" href="practice.css">
 <body>
-<header class="top">
+<header class="top no-print">
   <div>
     <h1>Student practice</h1>
-    <p class="sub">Original exam figures. Select A–D (highlighted). A wrong choice opens a follow-up that targets that mistake; the key is not shown until that follow-up is done.</p>
+    <p class="sub">Original exam wording and original figure. Choose A–D. A wrong choice opens a follow-up for that mistake; the key stays hidden until the follow-up is done.</p>
   </div>
   <nav>
-    <a href="hub.html">Home</a>
+    <a href="index.html">Home</a>
     <a href="student.html" class="on">Student</a>
     <a href="teacher.html">Teacher</a>
     <a href="generate.html">Generator</a>
   </nav>
 </header>
+<div class="toolbar no-print">
+  <div id="filters"></div>
+  <div class="tools">
+    <span id="count" class="muted"></span>
+    <button class="ghost" type="button" id="order">Paper order</button>
+    <button class="ghost" type="button" id="shuffle">Shuffle mixed set</button>
+    <button class="ghost" type="button" id="print-set">Print set</button>
+  </div>
+  <p class="muted" id="nmr-note">NMR in this harvest is paper-4 structured work, not A–D, so the NMR filter is empty. Infrared, mass spectrometry, and combined-technique MCQs are here.</p>
+</div>
 <div class="layout">
-  <aside class="list" id="list"></aside>
+  <aside class="list no-print" id="list"></aside>
   <main class="pane">
     <article class="paper" id="paper"></article>
   </main>
 </div>
+<section id="print-paper"></section>
+<script src="common.js"></script>
 <script src="student.js"></script>
 </body>
 </html>

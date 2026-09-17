@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Aliphatic exam practice + canonical IR generator.
+"""9701 spectroscopy MCQ practice + canonical IR generator.
 
   .venv/bin/python practice/server.py
   http://127.0.0.1:8778/
@@ -57,7 +57,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         path = unquote(self.path.split("?", 1)[0])
         if path in ("/", ""):
-            self.path = "/hub.html"
+            self.path = "/index.html"
             return super().do_GET()
         if path.startswith("/media/"):
             return self._file(HARVEST_ITEMS, path[len("/media/") :], ctype="image/png")
@@ -91,16 +91,23 @@ class Handler(SimpleHTTPRequestHandler):
                 {
                     "uid": it["uid"],
                     "spectrum_types": it.get("spectrum_types") or [],
+                    "technique": it.get("technique") or "",
+                    "item_type": it.get("item_type"),
                     "stem": it.get("stem") or "",
                     "options": it.get("options") or {},
                     "options_are_figure": bool(it.get("options_are_figure")),
                     "original_base64": it.get("original_base64"),
+                    "original_url": it.get("original_url"),
                     "has_examiner_comment": bool(it.get("examiner_comment")),
                     "has_lbs": bool(it.get("has_lbs")),
                     "aliphatic_class": it.get("aliphatic_class"),
                 }
             )
-        return {"n": len(items), "items": items}
+        tech = {}
+        for it in items:
+            t = it["technique"] or "other"
+            tech[t] = tech.get(t, 0) + 1
+        return {"n": len(items), "techniques": tech, "items": items}
 
     def _teacher_payload(self) -> dict:
         items = []

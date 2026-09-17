@@ -1236,13 +1236,45 @@ BANK["9701_w24_qp_12:q40"] = item(
 )
 
 
+def _merge_astra(items: dict) -> None:
+    """Fill gaps from Astra harness JSON. Authored records win."""
+    from lbs_schema import validate_item
+
+    astra_dir = Path(__file__).resolve().parents[1] / "out" / "astra"
+    if not astra_dir.is_dir():
+        return
+    for p in sorted(astra_dir.glob("lbs_*.json")):
+        try:
+            obj = json.loads(p.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        uid = obj.get("uid")
+        if not uid or uid in BANK:
+            continue
+        rec = {"solve": obj.get("solve"), "wrong": obj.get("wrong")}
+        if validate_item(uid, rec, key=obj.get("key")):
+            continue
+        rec["source"] = "astra"
+        items[uid] = rec
+
+
 def build() -> dict:
+    from lbs_gap import NEW
+
+    items = dict(BANK)
+    for uid, rec in NEW.items():
+        items.setdefault(uid, rec)
+    _merge_astra(items)
+    items.setdefault("9701_w23_qp_13:q39", items["9701_w23_qp_11:q39"])
+    items.setdefault("9701_w22_qp_13:q40", items.get("9701_w22_qp_11:q40"))
+    items.setdefault("9701_w23_qp_13:q40", items.get("9701_w23_qp_11:q40"))
+    items = {k: v for k, v in items.items() if v}
     doc = {
-        "schema": "spectra.lbs.v1",
+        "schema": "spectra.lbs.v2",
         "mx_types": [TS, CO, RR, SE, SF, MC, OC],
-        "note": "Student runtime looks up followup by uid+wrong letter. mx_type is teacher-key only.",
-        "items": BANK,
-        "n": len(BANK),
+        "note": "Student runtime looks up followup by uid+wrong letter. mx_type is teacher-key only. Astra authors gaps offline.",
+        "items": items,
+        "n": len(items),
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -1,25 +1,34 @@
 #!/usr/bin/env python3
-"""Pack 9701 items with base64 originals, stripped stems, and LBS keys."""
+"""Pack 9701 spectroscopy MCQs: original stems, original figures, LBS keys.
+
+Only items with A–D options and a mark-scheme (or TTwin) key.
+"""
 from __future__ import annotations
 
 import base64
 import json
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from display import learner_options, learner_stem, options_are_figure  # noqa: E402
+from display import learner_options, learner_stem, options_are_figure, technique  # noqa: E402
 from lbs_followups import build as build_lbs  # noqa: E402
+from lbs_schema import LETTERS, validate_item  # noqa: E402
 
 CANON = Path(__file__).resolve().parents[1]
 HARVEST = Path("/home/harik/awm_build/data/spectra")
 QUEST = CANON / "review" / "static" / "questions.json"
 TTWIN = Path("/home/harik/TTwin/data/questions/chemistry-senior.json")
-EXAM = CANON / "out" / "exam_luna"
 OUT = CANON / "practice" / "static" / "pack.json"
 TEMPLATES = CANON / "data" / "rules" / "exam_ir_templates.json"
 LBS_OUT = CANON / "practice" / "static" / "lbs.json"
 CURVES = CANON / "practice" / "static" / "ir_examples.json"
+MS_KEYS = CANON / "practice" / "static" / "ms_keys.json"
+MEDIA = CANON / "practice" / "static" / "media"
+
+MCQ_TYPES = {"mcq", "mcq_diagram", "mcq_table", "three_statement"}
+UID_RE = re.compile(r"^(9701_[msw]\d{2}_qp_\d+):q(\d+)$")
 
 
 def _b64(folder: str) -> str | None:
@@ -34,6 +43,13 @@ def _b64(folder: str) -> str | None:
     if png.is_file():
         return "data:image/png;base64," + base64.b64encode(png.read_bytes()).decode("ascii")
     return None
+
+
+def _ms_key(uid: str, ms: dict) -> str | None:
+    m = UID_RE.match(uid)
+    if not m:
+        return None
+    return (ms.get("papers") or {}).get(m.group(1), {}).get(m.group(2))
 
 
 def _export_examples() -> None:
@@ -70,9 +86,20 @@ def _export_examples() -> None:
     CURVES.write_text(json.dumps({"examples": out}, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _copy_media(folder: str) -> str | None:
+    src = HARVEST / "items" / folder / "original.png"
+    if not src.is_file():
+        return None
+    dest = MEDIA / folder / "original.png"
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(src.read_bytes())
+    return f"media/{folder}/original.png"
+
+
 def main() -> int:
     lbs_doc = build_lbs()
     q = json.loads(QUEST.read_text(encoding="utf-8"))
+    ms = json.loads(MS_KEYS.read_text(encoding="utf-8")) if MS_KEYS.is_file() else {"papers": {}}
     tt = {}
     if TTWIN.is_file():
         for it in json.loads(TTWIN.read_text(encoding="utf-8")):
@@ -83,19 +110,31 @@ def main() -> int:
     gold_uid = {rec.get("uid"): k for k, rec in gold.items()}
 
     items = []
+    skipped = {"not_mcq": 0, "no_options": 0, "no_key": 0}
     for row in q["items"]:
         uid = row["uid"]
+        item_type = row.get("item_type") or ""
+        if item_type not in MCQ_TYPES:
+            skipped["not_mcq"] += 1
+            continue
         tw = tt.get(uid) or {}
         a = tw.get("assessment") or {}
-        key = row.get("key") or a.get("mcq_key")
+        key = row.get("key") or a.get("mcq_key") or _ms_key(uid, ms)
         comm = a.get("examiner_comment") or {}
         folder = row["folder"]
         opts = row.get("options") or tw.get("options") or {}
         if isinstance(opts, dict):
-            options = {k: opts[k] for k in ("A", "B", "C", "D") if opts.get(k)}
+            options = {k: opts[k] for k in LETTERS if k in opts}
         else:
             options = {}
+        if sum(1 for k in LETTERS if k in options) < 4:
+            skipped["no_options"] += 1
+            continue
+        if not key:
+            skipped["no_key"] += 1
+            continue
         b64 = _b64(folder)
+        media = _copy_media(folder)
         stem_raw = row.get("stem") or tw.get("stem") or ""
         stem = learner_stem(stem_raw, options, uid, has_figure=bool(b64))
         disp_opts = learner_options(options)
@@ -103,12 +142,17 @@ def main() -> int:
         if lbs is not None:
             lbs["key"] = key
             lbs["examiner_comment"] = comm.get("text") if comm.get("present") else None
+            bad = validate_item(uid, lbs, key=key)
+            if bad:
+                print("LBS schema", uid, bad[:3])
+        types = row.get("spectrum_types") or []
         items.append(
             {
                 "uid": uid,
                 "folder": folder,
-                "spectrum_types": row.get("spectrum_types") or [],
-                "item_type": row.get("item_type") or tw.get("item_type"),
+                "spectrum_types": types,
+                "technique": technique(types),
+                "item_type": item_type,
                 "visual_form": row.get("visual_form"),
                 "is_spectrum_plot": bool(row.get("is_spectrum_plot")),
                 "stem": stem,
@@ -117,24 +161,31 @@ def main() -> int:
                 "options_raw": options,
                 "options_are_figure": options_are_figure(options),
                 "key": key,
+                "key_source": "ttwin" if a.get("mcq_key") else "mark_scheme",
                 "examiner_comment": comm.get("text") if comm.get("present") else None,
                 "has_original": bool(b64),
                 "original_base64": b64,
-                "original_url": f"/media/{folder}/original.png" if b64 else None,
+                "original_url": media or (f"media/{folder}/original.png" if b64 else None),
                 "aliphatic_class": gold_uid.get(uid),
                 "complete_exam": bool(tw.get("complete_exam")),
                 "has_lbs": bool(lbs),
             }
         )
+
     LBS_OUT.write_text(json.dumps(lbs_doc, ensure_ascii=False) + "\n", encoding="utf-8")
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    tech = {}
+    for it in items:
+        tech[it["technique"]] = tech.get(it["technique"], 0) + 1
     doc = {
-        "schema": "spectra.practice.v2",
+        "schema": "spectra.practice.v3",
         "n": len(items),
-        "n_mcq": sum(1 for it in items if it["options"] and it["key"]),
+        "n_mcq": len(items),
         "n_figure": sum(1 for it in items if it["original_base64"]),
         "n_examiner": sum(1 for it in items if it["examiner_comment"]),
         "n_lbs": sum(1 for it in items if it["has_lbs"]),
+        "techniques": tech,
+        "skipped": skipped,
         "items": items,
     }
     OUT.write_text(json.dumps(doc, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -144,10 +195,10 @@ def main() -> int:
     except Exception as e:
         print("ir_examples skipped:", e)
     print(
-        f"wrote {OUT} n={doc['n']} mcq={doc['n_mcq']} fig={doc['n_figure']} "
-        f"examiner={doc['n_examiner']} lbs={doc['n_lbs']}"
+        f"wrote {OUT} n={doc['n']} fig={doc['n_figure']} "
+        f"examiner={doc['n_examiner']} lbs={doc['n_lbs']} tech={tech} skipped={skipped}"
     )
-    print("wrote", LBS_OUT)
+    print("wrote", LBS_OUT, "n", lbs_doc.get("n"))
     return 0
 
 
