@@ -2,64 +2,22 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>9701 spectroscopy · practice</title>
+<title>9701 spectroscopy</title>
 <link rel="stylesheet" href="practice.css">
 <body>
-<header class="top">
-  <div>
-    <h1>9701 spectroscopy</h1>
-    <p class="sub">Cambridge International AS &amp; A Level Chemistry Paper 1 MCQs on infrared, mass spectrometry, and mixed techniques. Complete text is shown as text. A base64 figure is shown only when the paper has a spectrum or option diagram.</p>
-  </div>
-  <nav>
-    <a href="index.html" class="on">Home</a>
-    <a href="student.html">Student</a>
-    <a href="teacher.html">Teacher</a>
-    <a href="generate.html">Generator</a>
-  </nav>
-</header>
+<nav class="bar">
+  <a href="index.html" class="on">Home</a>
+  <a href="student.html">Practice</a>
+  <a href="teacher.html">Teacher</a>
+  <a href="generate.html">Generator</a>
+</nav>
 <div class="wrap">
-  <section class="hero">
-    <p class="lede">Choose infrared, mass spectrometry, or a mixed set. Each question is the stem, any figure, and A–D.</p>
-    <p class="stats" id="stats">Loading counts…</p>
-  </section>
+  <h1>9701 spectroscopy</h1>
   <div class="cards">
-    <a class="card" href="student.html">
-      <h2>Student practice</h2>
-      <p class="muted">Work the questions. A wrong choice opens a related question underneath.</p>
-    </a>
-    <a class="card" href="teacher.html">
-      <h2>Teacher pack</h2>
-      <p class="muted">Print the same questions. The answer key includes a follow-up for each wrong option.</p>
-    </a>
-    <a class="card" href="generate.html">
-      <h2>Canonical generator</h2>
-      <p class="muted">Type an aliphatic name or SMILES. The IR envelope is the 9701 exam-paper class plus experimental diagnostic bands. Open-chain aliphatic only.</p>
-    </a>
+    <a class="card" href="student.html"><h2>Practice</h2></a>
+    <a class="card" href="teacher.html"><h2>Teacher</h2></a>
+    <a class="card" href="generate.html"><h2>Generator</h2></a>
   </div>
-  <section class="how">
-    <h2>How a question is shown</h2>
-    <ol>
-      <li>Complete text is shown as text. A figure is shown only when the paper has a spectrum or option diagram.</li>
-      <li>Wording already in the figure is not repeated.</li>
-      <li>A question includes its four options. Scroll if it does not fit on one screen.</li>
-    </ol>
-    <p class="muted">There are no NMR multiple-choice questions in this set.</p>
-  </section>
 </div>
-<script>
-fetch("pack.json").then(r => r.json()).then(doc => {
-  const t = doc.techniques || {};
-  const el = document.getElementById("stats");
-  el.innerHTML =
-    "<b>" + (doc.n_mcq || doc.n || 0) + "</b> MCQs · " +
-    "<b>" + (t.ir || 0) + "</b> infrared · " +
-    "<b>" + (t.ms || 0) + "</b> mass spectrometry · " +
-    "<b>" + (t.mixed || 0) + "</b> combined · " +
-    "<b>" + (t.nmr || 0) + "</b> NMR · " +
-    "<b>" + (doc.n_lbs || 0) + "</b> with learn-by-solve";
-}).catch(() => {
-  document.getElementById("stats").textContent = "";
-});
-</script>
 </body>
 </html>

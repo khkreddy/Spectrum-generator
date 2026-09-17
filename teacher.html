@@ -2,34 +2,31 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Teacher pack · 9701 spectroscopy</title>
+<title>Teacher · 9701 spectroscopy</title>
 <link rel="stylesheet" href="practice.css">
-<body>
-<header class="top no-print">
-  <div>
-    <h1>Teacher pack</h1>
-    <p class="sub">Select questions and print them. The answer key includes a short follow-up for each wrong option.</p>
-  </div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="student.html">Student</a>
-    <a href="teacher.html" class="on">Teacher</a>
-    <a href="generate.html">Generator</a>
-  </nav>
-</header>
-<div class="wrap no-print">
-  <div id="filters"></div>
-  <p class="muted" id="nmr-note">There are no NMR multiple-choice questions in this set.</p>
-  <p class="tools">
-    <span id="count" class="muted"></span>
-    <button class="ghost" type="button" id="all">Select visible</button>
-    <button class="ghost" type="button" id="none">Clear</button>
-    <label class="inline"><input type="checkbox" id="answers" checked> attach answer key</label>
-    <button class="act" type="button" id="dl">Download PDF</button>
-    <button class="ghost" type="button" id="print">Print paper + key</button>
-  </p>
-  <p class="err" id="err"></p>
-  <table class="sel" id="tbl"></table>
+<body class="app">
+<nav class="bar no-print">
+  <a href="index.html">Home</a>
+  <a href="student.html">Practice</a>
+  <a href="teacher.html" class="on">Teacher</a>
+  <a href="generate.html">Generator</a>
+</nav>
+<div class="layout">
+  <aside class="rail no-print">
+    <div id="filters"></div>
+    <div class="tools">
+      <span id="count" class="muted"></span>
+      <button class="ghost" type="button" id="all">Select</button>
+      <button class="ghost" type="button" id="none">Clear</button>
+      <label class="inline"><input type="checkbox" id="answers" checked> answer key</label>
+      <button class="act" type="button" id="dl">PDF</button>
+      <button class="ghost" type="button" id="print">Print</button>
+    </div>
+  </aside>
+  <main class="pane pane-table">
+    <p class="err" id="err"></p>
+    <table class="sel" id="tbl"></table>
+  </main>
 </div>
 <section id="print-paper"></section>
 <section id="print-key" class="print-key"></section>

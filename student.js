@@ -27,8 +27,6 @@
     const start = new Set(U.TECH.map((t) => t.id).filter((id) => (c[id] || 0) > 0));
     $("filters").innerHTML = U.filterBar(S.all, start);
     $("filters").onchange = applyFilter;
-    const note = $("nmr-note");
-    if (note) note.hidden = (c.nmr || 0) > 0;
   }
 
   function renderList() {

@@ -46,13 +46,12 @@
   function filterBar(items, selected, extraClass) {
     const c = counts(items);
     const sel = selected || new Set(TECH.map((t) => t.id).filter((id) => c[id] > 0));
-    const chips = TECH.map((t) => {
+    const chips = TECH.filter((t) => (c[t.id] || 0) > 0).map((t) => {
       const n = c[t.id] || 0;
       const checked = sel.has(t.id) ? " checked" : "";
-      const empty = n === 0 ? " empty" : "";
       return (
-        "<label class='chip" + empty + "'>" +
-        "<input type='checkbox' data-tech='" + t.id + "'" + checked + (n === 0 ? " disabled" : "") + ">" +
+        "<label class='chip'>" +
+        "<input type='checkbox' data-tech='" + t.id + "'" + checked + ">" +
         "<span>" + t.label + " <b>" + n + "</b></span></label>"
       );
     }).join("");

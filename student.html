@@ -2,33 +2,26 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Student practice · 9701 spectroscopy</title>
+<title>Practice · 9701 spectroscopy</title>
 <link rel="stylesheet" href="practice.css">
 <body class="app">
-<header class="top no-print">
-  <div>
-    <h1>Student practice</h1>
-    <p class="sub">Select a question. Choose A, B, C or D.</p>
-  </div>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="student.html" class="on">Student</a>
-    <a href="teacher.html">Teacher</a>
-    <a href="generate.html">Generator</a>
-  </nav>
-</header>
-<div class="toolbar no-print">
-  <div id="filters"></div>
-  <div class="tools">
-    <span id="count" class="muted"></span>
-    <button class="ghost" type="button" id="order">In order</button>
-    <button class="ghost" type="button" id="shuffle">Shuffle</button>
-    <button class="ghost" type="button" id="print-set">Print</button>
-  </div>
-  <p class="muted" id="nmr-note">There are no NMR multiple-choice questions in this set.</p>
-</div>
+<nav class="bar no-print">
+  <a href="index.html">Home</a>
+  <a href="student.html" class="on">Practice</a>
+  <a href="teacher.html">Teacher</a>
+  <a href="generate.html">Generator</a>
+</nav>
 <div class="layout">
-  <aside class="list no-print" id="list"></aside>
+  <aside class="rail no-print">
+    <div id="filters"></div>
+    <div class="tools">
+      <span id="count" class="muted"></span>
+      <button class="ghost" type="button" id="order">In order</button>
+      <button class="ghost" type="button" id="shuffle">Shuffle</button>
+      <button class="ghost" type="button" id="print-set">Print</button>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
   <main class="pane">
     <article class="paper" id="paper"></article>
   </main>
